@@ -405,3 +405,5 @@ FodyWeavers.xsd
 *.lock
 
 .vscode/
+
+.idea/
