@@ -1,8 +1,9 @@
 {
-  "name": "Ivis-23-g2",
+  "name": "Ivis-25-g3",
   "private": false,
   "version": "0.0.0",
   "type": "module",
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

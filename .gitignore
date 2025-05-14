@@ -407,3 +407,5 @@ FodyWeavers.xsd
 .vscode/
 
 .idea/
+
+dist/
