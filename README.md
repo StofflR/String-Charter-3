@@ -21,9 +21,8 @@ The web application is now 'portable' and the contents of the _.\dist_ folder ca
 To run the application a HTTP Server is required. For testing purposes `python3 -m http.server` could be used.
 
 ### Tauri
+Install tauri and its dependencies. See https://v2.tauri.app/ to install tauri for your platform.
+Note: Once Rust is installed the console needs to be refreshed to properly work.
 
-## How to build web app and executables:
-- Make sure all necessary prerequisites for Tauri are installed (Node, Rust,...)
-- Change into the src-tauri directory: cd src-tauri
-- To build the windows executables: npm run tauri build (for other platforms see https://tauri.app/v1/guides/building/)
-The installation files for the app will be generated in the folder \src-tauri\target\release\bundle\
+To execute the tauri dev build run `yarn tauri dev` and `yarn tauri build` to build the application.
+The generated build can be found in the folder _./src-tauri/target/\*type\*/bundle_.
