@@ -5,6 +5,8 @@ import { generateSVG, generateStringGraph } from './string_graph';
 
 
 let trips: Trip[];
+let loadedRoutes: RouteD[] = [];
+
 
 function getFlipAxisValue(): boolean {
   const checkbox = document.getElementById('axis-switch') as HTMLInputElement;
@@ -49,27 +51,45 @@ function flipAxisToggle() {
   generateStringGraph(trips, getFlipAxisValue());
 }
 
+
+
 document.addEventListener('DOMContentLoaded', () => {
   const fileInput = document.getElementById('file-input') as HTMLInputElement;
   const routeSelect = document.getElementById('route-select') as HTMLSelectElement;
 
-  let loadedRoutes: RouteD[] = [];
-  
   fileInput.addEventListener('change', async () => {
     const file = fileInput.files?.[0];
     const routeNames: string[] = [];
-    
+
+    if (routeSelect) {
+      routeSelect.addEventListener('change', async () => {
+        if (routeSelect.value == null) {
+          return;
+        }
+        const stringGraphCard = document.getElementById('string-graph-card');
+
+        stringGraphCard!.style.display = 'flex';
+        const selectedRouteName = routeSelect.value;
+        const selectedRoute = loadedRoutes.find((route) => route.name === selectedRouteName);
+        trips = selectedRoute?.trips as Trip[];
+        if (selectedRoute) {
+          const file = fileInput.files?.[0];
+          if (file)
+            generateStringGraph(selectedRoute.trips, getFlipAxisValue());
+        }
+      });
+    }
     if (file) {
 
       const routes = await loadGTFSData(file);
-      
+
       for (const route of routes) {
-        
+
         trips = route.trips;
         let maxLength = 0;
         getStations(route.trips);
         let longestArray: string[] = [];
-        
+
         for (let i = 0; i < trips?.length; i++) {
           const stations = trips[i].stations;
           if (stations.length > maxLength) {
@@ -77,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
             longestArray = stations;
           }
         }
-        
+
         if (longestArray.length > 0) {
           const firstStation = longestArray[0];
           const lastStation = longestArray[longestArray.length - 1];
@@ -85,37 +105,19 @@ document.addEventListener('DOMContentLoaded', () => {
           if (!routeNames.includes(routeString)) {
             routeNames.push(routeString);
           }
-          
+
           route.name = routeString;
-          
+
         }
       }
       loadedRoutes = routes;
       await populateRouteSelect(routeNames);
-      
+      const selectedRoute = loadedRoutes.at(0);
+      if (selectedRoute) {
+        generateStringGraph(selectedRoute.trips, getFlipAxisValue());
+      }
     }
   });
-  
-  if (routeSelect) {
-    routeSelect.addEventListener('change', async () => {
-      if(routeSelect.value == null){
-        return;
-      }
-      const stringGraphCard = document.getElementById('string-graph-card');
-
-      stringGraphCard!.style.display = 'flex';
-      const selectedRouteName = routeSelect.value;
-      const selectedRoute = loadedRoutes.find((route) => route.name === selectedRouteName);
-      trips = selectedRoute?.trips as Trip[];
-      if (selectedRoute) {
-        const file = fileInput.files?.[0];
-        if (file) {
-          
-          generateStringGraph(selectedRoute.trips, getFlipAxisValue());
-        }
-      }
-    });
-  }
 });
 
 

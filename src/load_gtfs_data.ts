@@ -3,24 +3,24 @@ import { parse } from 'papaparse';
 import { StopTime, Trip, RouteD } from "./interfaces";
 
 export async function loadGTFSData(file: File): Promise<RouteD[]> {
-    let zip = new JSZip();
-    let content = await zip.loadAsync(file);
-  
-    let tripData = content.files['trips.txt'];
-    let tripCsvText = await tripData.async('text');
-    let routeData = content.files['routes.txt'];
-    let routeCsvText = await routeData.async('text');
-    let stopTimesData = content.files['stop_times.txt'];
-    let stopTimesCsvText = await stopTimesData.async('text');
-    let stopsData = content.files['stops.txt'];
-    let stopsCsvText = await stopsData.async('text');
-    let routes = parseRouteData_R(routeCsvText);
+  let zip = new JSZip();
+  let content = await zip.loadAsync(file);
 
-    let trips = parseRouteData(tripCsvText, stopTimesCsvText, stopsCsvText, routes);
+  let tripData = content.files['trips.txt'];
+  let tripCsvText = await tripData.async('text');
+  let routeData = content.files['routes.txt'];
+  let routeCsvText = await routeData.async('text');
+  let stopTimesData = content.files['stop_times.txt'];
+  let stopTimesCsvText = await stopTimesData.async('text');
+  let stopsData = content.files['stops.txt'];
+  let stopsCsvText = await stopsData.async('text');
+  let routes = parseRouteData_R(routeCsvText);
+
+  let trips = parseRouteData(tripCsvText, stopTimesCsvText, stopsCsvText, routes);
 
 
-    return trips;
-  }
+  return trips;
+}
 
 function parseRouteData(csvText: string, stopTimesCsvText: string, stopsCsvText: string, routes_: RouteD[]): RouteD[] {
   const results = parse(csvText, { header: true });
@@ -59,13 +59,17 @@ function parseRouteData(csvText: string, stopTimesCsvText: string, stopsCsvText:
     if (!stopTimesByTripId[tripId]) {
       stopTimesByTripId[tripId] = [];
     }
+
     stopTimesByTripId[tripId].push({
       id: row.stop_id,
       tripId: tripId,
       station: stopsById[row.stop_id],
       time: row.arrival_time,
+      distance: parseFloat(row.shape_dist_traveled),
     });
   });
+
+
 
   routes_.forEach((route) => {
     const routeTrips: Trip[] = tripsByRouteId[route.id] || [];
