@@ -116,7 +116,7 @@ function createMouseOverStopInfo(canvas: HTMLCanvasElement, posX:number, posY:nu
       });
     
       canvas.addEventListener('mouseout', () => {
-        stopDetailElement.textContent = ' ';
+        stopDetailElement.textContent = ' --- hover over a stop to see details --- ';
       });
 
 

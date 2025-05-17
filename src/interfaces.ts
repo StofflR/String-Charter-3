@@ -3,6 +3,7 @@ export interface StopTime {
     tripId: string;
     station: string;
     time: string;
+    distance: number;
 }
 
 export interface Trip {
