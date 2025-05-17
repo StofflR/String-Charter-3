@@ -1,4 +1,4 @@
-import { Trip, StopTime} from "./interfaces";
+import { Trip, StopTime} from "./interfaces.ts";
  let minTime = 0;
  let maxTime = 0;
 

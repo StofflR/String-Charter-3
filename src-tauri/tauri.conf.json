@@ -4,10 +4,10 @@
   "version": "0.1.0",
   "identifier": "com.string-charter-3.dev",
   "build": {
-    "frontendDist": "../dist",
+    "frontendDist": "../src/dist",
     "devUrl": "http://localhost:1420/",
-    "beforeDevCommand": "yarn dev",
-    "beforeBuildCommand": "yarn build"
+    "beforeDevCommand": "cd ../src && yarn dev",
+    "beforeBuildCommand": "cd ../src && yarn build"
   },
   "app": {
     "windows": [
