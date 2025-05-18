@@ -51,10 +51,19 @@ function flipAxisToggle(event: Event) {
 document.addEventListener('DOMContentLoaded', () => {
   const fileInput = document.getElementById('file-input') as HTMLInputElement;
   const routeSelect = document.getElementById('route-select') as HTMLSelectElement;
+  const fileNameLabel = document.getElementById('file-name-label') as HTMLElement;
 
   fileInput.addEventListener('change', async () => {
+    if (fileInput == null || fileInput.files == null) {
+      return;
+    }
+    if (fileInput.files.length) {
+      fileNameLabel.textContent = `Selected file: ${fileInput.files[0].name}`;
+    }
+
     const file = fileInput.files?.[0];
     const routeNames: string[] = [];
+    graph.hidden = fileInput.files.length === 0;
 
     if (routeSelect) {
       routeSelect.addEventListener('change', async () => {
@@ -113,6 +122,34 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
+
+
+  const dropArea = document.getElementById('drop-area') as HTMLElement;
+  const graph = document.getElementById('graph-card') as HTMLButtonElement;
+
+  dropArea.addEventListener('click', () => fileInput.click());
+
+  dropArea.addEventListener('dragover', (e: DragEvent) => {
+    e.preventDefault();
+    dropArea.classList.add('bg-gray-200');
+  });
+
+  dropArea.addEventListener('dragleave', () => {
+    dropArea.classList.remove('bg-gray-200');
+  });
+
+  dropArea.addEventListener('drop', (e: DragEvent) => {
+    e.preventDefault();
+    dropArea.classList.remove('bg-gray-200');
+    if (e.dataTransfer?.files.length) {
+      fileInput.files = e.dataTransfer.files;
+      // Handle the file as needed
+    }
+  });
+
+
+
+
 });
 
 
@@ -149,18 +186,47 @@ function exportAsSVG(canvas: HTMLCanvasElement): void {
 }
 </script>
 
+
 <template>
-    <div id="container">
+  <div id="container">
     <div id="controls">
       <h1>String Charter 3: Visual Transport Schedule</h1>
-      <label for="file-input" class="">Select a GTFS zip:</label>
-      <input class="" type="file" id="file-input" accept=".zip"/>
+      <label for="drop-area" class="mt-8 mx-8">Select a GTFS zip</label>
+      <div id="drop-area"
+        class="border-2 border-dashed border-gray-400 rounded-lg p-8 text-center cursor-pointer transition hover:bg-gray-100 mx-8">
+        <p class="mb-2">Drag & drop a GTFS zip file here, or <span class="text-blue-600 underline">click to
+            select</span>
+        </p>
+        <input type="file" id="file-input" accept=".zip" class="hidden" />
+      </div>
       <br>
-      <label for="route-select" class="">Select a route:</label>
-      <select id="route-select" class=""></select>
-      <div class="" id="flip-axis">
-        <input class="" type="checkbox" id="axis-switch" @change="flipAxisToggle">
-        <label class="" for="axis-switch">Flip Axis</label>
+  
+      <div class="mt-2 mx-8 text-gray-700" id="file-name-label"></div>
+
+      <label for="route-select" class="mt-2 mx-8 ">Select a route:</label>
+      <div class="relative w-64 mx-auto my-4">
+        <select id="route-select"
+          class="block w-full appearance-none bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
+          <option disabled selected value> -- select a route -- </option>
+        </select>
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-center my-4" id="flip-axis">
+        <label for="axis-switch" class="flex items-center cursor-pointer">
+          <span class="mr-3 text-gray-700 font-medium">Flip Axis</span>
+          <div class="relative">
+            <input id="axis-switch" type="checkbox" class="sr-only peer" @change="flipAxisToggle">
+            <div class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-blue-500 transition"></div>
+            <div
+              class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow peer-checked:translate-x-5 transition">
+            </div>
+          </div>
+        </label>
       </div>
     </div>
   </div>

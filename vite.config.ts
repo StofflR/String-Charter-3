@@ -10,7 +10,9 @@ const host = process.env.TAURI_DEV_HOST;
 export default defineConfig(async () => ({
 
   root: 'src', // <== tells Vite where your app lives
-  plugins: [vue()],
+  plugins: [
+    tailwindcss(), 
+    vue()],
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
   // 1. prevent vite from obscuring rust errors
@@ -39,6 +41,7 @@ export default defineConfig(async () => ({
     envPrefix: ["VITE_", "TAURI_"],
     plugins: [
       tailwindcss(),
+      vue()
     ],
   },
 }));
