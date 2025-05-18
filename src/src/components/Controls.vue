@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue';
 import { Trip, RouteD } from '../../interfaces.ts';
 import { loadGTFSData, getStations } from '../../load_gtfs_data';
 import { generateSVG, generateStringGraph } from '../../string_graph';
@@ -27,18 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-async function populateRouteSelect(routes: string[]): Promise<void> {
-  const routeSelect = document.getElementById('route-select') as HTMLSelectElement;
-  routeSelect.innerHTML = '';
-
-  routes.forEach((route) => {
-    const option = document.createElement('option');
-    option.value = route;
-    option.textContent = route;
-    routeSelect.appendChild(option);
-  });
-}
-
 function flipAxisToggle(event: Event) {
   const target = event.target as HTMLInputElement;
   const isChecked = target.checked;
@@ -47,6 +36,7 @@ function flipAxisToggle(event: Event) {
 }
 
 
+let routeNames = ref([]);
 
 document.addEventListener('DOMContentLoaded', () => {
   const fileInput = document.getElementById('file-input') as HTMLInputElement;
@@ -62,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const file = fileInput.files?.[0];
-    const routeNames: string[] = [];
+    routeNames.value = []
 
     if (routeSelect) {
       routeSelect.addEventListener('change', async () => {
@@ -105,8 +95,8 @@ document.addEventListener('DOMContentLoaded', () => {
           const firstStation = longestArray[0];
           const lastStation = longestArray[longestArray.length - 1];
           const routeString = `${firstStation} -> ${lastStation}`;
-          if (!routeNames.includes(routeString)) {
-            routeNames.push(routeString);
+          if (!routeNames.value.includes(routeString)) {
+            routeNames.value.push(routeString);
           }
 
           route.name = routeString;
@@ -114,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
       loadedRoutes = routes;
-      await populateRouteSelect(routeNames);
+      //await populateRouteSelect(routeNames);
       const selectedRoute = loadedRoutes.at(0);
       if (selectedRoute) {
         generateStringGraph(selectedRoute.trips, getFlipAxisValue());
@@ -182,39 +172,47 @@ function exportAsSVG(canvas: HTMLCanvasElement): void {
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 }
+
+let routeFilter = ref('');
+const filteredRoutes = computed(() => {
+  return routeNames.value.filter(option => 
+    option.toLowerCase().includes(routeFilter.value.toLocaleLowerCase())
+  )
+});
+
 </script>
 
 
 <template>
   <div id="container">
     <div id="controls">
-      <h1>String Charter 3: Visual Transport Schedule</h1>
-      <label for="drop-area" class="mt-8 mx-8">Select a GTFS zip</label>
+      <h1>String Charter 3</h1>
+      <label for="drop-area" class="mt-8">Select a GTFS zip</label>
       <div id="drop-area"
-        class="border-2 border-dashed border-gray-400 rounded-lg p-8 text-center cursor-pointer transition hover:bg-gray-100 mx-8">
-        <p class="mb-2">Drag & drop a GTFS zip file here, or <span class="text-blue-600 underline">click to
+        class="border-2 border-dashed border-gray-400 rounded-lg p-8 text-center cursor-pointer transition hover:bg-gray-100 ">
+        <p>Drag & drop a GTFS zip file here, or <span class="text-blue-600 underline">click to
             select</span>
         </p>
         <input type="file" id="file-input" accept=".zip" class="hidden" />
       </div>
-      <br>
   
-      <div class="mt-2 mx-8 text-gray-700" id="file-name-label"></div>
+      <div class="mt-2text-gray-700" id="file-name-label"></div>
 
-      <label for="route-select" class="mt-2 mx-8 ">Select a route:</label>
-      <div class="relative w-64 mx-auto my-4">
-        <select id="route-select"
-          class="block w-full appearance-none bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
-          <option disabled selected value> -- select a route -- </option>
+      <label for="route-filter" class="mt-6">Filter routes:</label>
+      <input id="rout-filter" v-model="routeFilter" class="block w-full appearance-none bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
+
+      <label for="route-select" class="mt-6">Select a route:</label>
+      <div>
+        <select size="10" id="route-select"
+          class="block w-full appearance-none bg-white border border-gray-300 text-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
+          <!-- <option disabled selected value> -- select a route -- </option> -->
+          <option v-for="option in filteredRoutes" :key="option" :value="option" 
+          class="py-3 px-4 "
+          > {{ option }} </option>
         </select>
-        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
-          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
       </div>
 
-      <div class="flex items-center justify-center my-4" id="flip-axis">
+      <div class="flex items-center justify-center mt-4 mx-2" id="flip-axis">
         <label for="axis-switch" class="flex items-center cursor-pointer">
           <span class="mr-3 text-gray-700 font-medium">Flip Axis</span>
           <div class="relative">
