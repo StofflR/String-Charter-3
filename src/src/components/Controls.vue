@@ -63,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const file = fileInput.files?.[0];
     const routeNames: string[] = [];
-    graph.hidden = fileInput.files.length === 0;
 
     if (routeSelect) {
       routeSelect.addEventListener('change', async () => {
@@ -125,7 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   const dropArea = document.getElementById('drop-area') as HTMLElement;
-  const graph = document.getElementById('graph-card') as HTMLButtonElement;
 
   dropArea.addEventListener('click', () => fileInput.click());
 
