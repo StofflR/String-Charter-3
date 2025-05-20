@@ -100,14 +100,19 @@ function createMouseOverStopInfo(canvas: HTMLCanvasElement, posX:number, posY:nu
     }
 
    // let windowVisible = false;
+    const relativeX = posX / canvas.width;
+    const relativeY = posY / canvas.height;
+
 
     canvas.addEventListener('mousemove', (event: MouseEvent) => {
         const rect = canvas.getBoundingClientRect();
         const mouseX = event.clientX - rect.left;
         const mouseY = event.clientY - rect.top;
+        const relativeMouseX = mouseX / rect.width;
+        const relativeMouseY = mouseY / rect.height;
     
         // Calculate the distance between the mouse coordinates and the center of the arc
-        const distance = Math.sqrt(Math.pow(mouseX - posX, 2) + Math.pow(mouseY - posY, 2));
+        const distance = Math.sqrt(Math.pow(relativeMouseX - relativeX, 2) * canvas.width + Math.pow(relativeMouseY - relativeY, 2)* canvas.height);
     
         // Check if the distance is within the arc radius
         if (distance <= rad) {
@@ -543,6 +548,9 @@ export function generateSVG(data: Trip[], svg:SVGSVGElement, width:number, heigh
 export function generateStringGraph(data: Trip[], axisFlip:boolean): void {
     const canvas = document.getElementById('graphCanvas') as HTMLCanvasElement;
     const ctx = canvas.getContext('2d');
+
+    canvas.width = 1900
+    canvas.height = 1080
 
     if (ctx === null) {
         console.error('Canvas context is not supported.');
