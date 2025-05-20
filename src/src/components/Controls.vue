@@ -184,7 +184,7 @@ const filteredRoutes = computed(() => {
 
 
 <template>
-  <div id="container">
+  <div id="container" class="min-w-1/4">
     <div id="controls">
       <h1>String Charter 3</h1>
       <label for="drop-area" class="mt-8">Select a GTFS zip</label>
@@ -223,6 +223,11 @@ const filteredRoutes = computed(() => {
             </div>
           </div>
         </label>
+      </div>
+      <div class="flex mt-4 justify-center">
+        <button id="exportButton"
+                class="mt-6 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold rounded-full shadow-md transition transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400">Export
+          as SVG</button>
       </div>
     </div>
   </div>
