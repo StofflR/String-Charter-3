@@ -13,16 +13,20 @@
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-opener": "^2",
     "jszip": "^3.10.1",
-    "papaparse": "^5.4.1"
+    "papaparse": "^5.4.1",
+    "vue": "^3.5.14",
+    "yarn": "^1.22.22"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.6",
-    "tailwindcss": "^4.1.6",
     "@types/papaparse": "^5.3.7",
-    "@tauri-apps/cli": "^2",
-    "vite": "^6.0.3",
-    "typescript": "~5.6.2"
+    "@vitejs/plugin-vue": "^5.2.4",
+    "concurrently": "^9.1.2",
+    "tailwindcss": "^4.1.6",
+    "typescript": "~5.6.2",
+    "vite": "^6.0.3"
   },
   "main": "index.js",
-  "repository": "git@github.com:StofflR/String-Charter-3.git"
+  "repository": "git@github.com:StofflR/String-Charter-3.git",
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
