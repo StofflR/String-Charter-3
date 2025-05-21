@@ -1,24 +1,26 @@
-import { Trip, StopTime} from "./interfaces.ts";
- let minTime = 0;
- let maxTime = 0;
+import {Trip, StopTime} from "./interfaces.ts";
 
-function getOffsetX(axisFlip:boolean):number{
-    if(axisFlip){
+let minTime = 0;
+let maxTime = 0;
+
+function getOffsetX(axisFlip: boolean): number {
+    if (axisFlip) {
         return 240;
-    }else{
+    } else {
         return 40;
     }
 }
-function getOffsetY(axisFlip:boolean):number{
-    if(axisFlip){
+
+function getOffsetY(axisFlip: boolean): number {
+    if (axisFlip) {
         return 40;
-    }else{
+    } else {
         return 170;
     }
 }
 
-function splitLongStationName(name:string):number{      //maybe better splitting like at , or space
-    return Math.ceil(name.length/2);
+function splitLongStationName(name: string): number {      //maybe better splitting like at , or space
+    return Math.ceil(name.length / 2);
 }
 
 
@@ -29,9 +31,9 @@ function translateTimeToMinutes(time: string): number {
 }
 
 function findMinTime(timetable: Trip[]): number {
-    let minTime: number = 23*60 + 59;
+    let minTime: number = 23 * 60 + 59;
     let str: number = 0;
-    if(timetable == null){
+    if (timetable == null) {
         console.log("timetable is null");
     }
     for (const trip of timetable) {
@@ -60,7 +62,7 @@ function findMaxTime(timetable: Trip[]): number {
     return str;
 }
 
-function drawStopCircle(canvas :HTMLCanvasElement, x :number, y: number, trip:string, stop:string, time:string): void{
+function drawStopCircle(canvas: HTMLCanvasElement, x: number, y: number, trip: string, stop: string, time: string): void {
     const ctx = canvas.getContext('2d');
     if (ctx === null) {
         console.error('Canvas context is not supported.');
@@ -69,25 +71,25 @@ function drawStopCircle(canvas :HTMLCanvasElement, x :number, y: number, trip:st
     const radius: number = 3;
 
     ctx.beginPath();
-    ctx.arc(x,y,radius, 0, 2* Math.PI, false);
+    ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
     ctx.lineWidth = 1;
     ctx.stroke();
     createMouseOverStopInfo(canvas, x, y, radius, trip, stop, time);
 }
 
-function drawStopCircleSVG(svg:SVGSVGElement, x:number, y:number) : void{
-  const radius: number = 3;
-  const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-  circle.setAttribute('cx', x.toString());
-  circle.setAttribute('cy', y.toString());
-  circle.setAttribute('r', radius.toString());
-  circle.setAttribute('fill', 'none');
-  circle.setAttribute('stroke', 'black');
-  svg.appendChild(circle);
+function drawStopCircleSVG(svg: SVGSVGElement, x: number, y: number): void {
+    const radius: number = 3;
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', x.toString());
+    circle.setAttribute('cy', y.toString());
+    circle.setAttribute('r', radius.toString());
+    circle.setAttribute('fill', 'none');
+    circle.setAttribute('stroke', 'black');
+    svg.appendChild(circle);
 
 }
 
-function createMouseOverStopInfo(canvas: HTMLCanvasElement, posX:number, posY:number, rad:number, trip:string, stop:string, time:string): void{
+function createMouseOverStopInfo(canvas: HTMLCanvasElement, posX: number, posY: number, rad: number, trip: string, stop: string, time: string): void {
     const ctx = canvas.getContext('2d');
     if (ctx === null) {
         console.error('Canvas context is not supported.');
@@ -95,11 +97,11 @@ function createMouseOverStopInfo(canvas: HTMLCanvasElement, posX:number, posY:nu
     }
     const stopDetailElement = document.getElementById('stop-detail');
     if (!stopDetailElement) {
-      console.error('Stop detail element not found.');
-      return;
+        console.error('Stop detail element not found.');
+        return;
     }
 
-   // let windowVisible = false;
+    // let windowVisible = false;
     const relativeX = posX / canvas.width;
     const relativeY = posY / canvas.height;
 
@@ -110,24 +112,24 @@ function createMouseOverStopInfo(canvas: HTMLCanvasElement, posX:number, posY:nu
         const mouseY = event.clientY - rect.top;
         const relativeMouseX = mouseX / rect.width;
         const relativeMouseY = mouseY / rect.height;
-    
+
         // Calculate the distance between the mouse coordinates and the center of the arc
-        const distance = Math.sqrt(Math.pow(relativeMouseX - relativeX, 2) * canvas.width + Math.pow(relativeMouseY - relativeY, 2)* canvas.height);
-    
+        const distance = Math.sqrt(Math.pow(relativeMouseX - relativeX, 2) * canvas.width + Math.pow(relativeMouseY - relativeY, 2) * canvas.height);
+
         // Check if the distance is within the arc radius
         if (distance <= rad) {
-          stopDetailElement.textContent = trip+' stopping at: '+stop+ ', time: '+ time;
+            stopDetailElement.textContent = trip + ' stopping at: ' + stop + ', time: ' + time;
         }
-      });
-    
-      canvas.addEventListener('mouseout', () => {
+    });
+
+    canvas.addEventListener('mouseout', () => {
         stopDetailElement.textContent = ' --- hover over a stop to see details --- ';
-      });
+    });
 
 
 }
 
-function drawGraphBackgroundSVG(svg:SVGSVGElement, width:number, height:number, data: Trip[], axisFlip:boolean): void{
+function drawGraphBackgroundSVG(svg: SVGSVGElement, width: number, height: number, data: Trip[], axisFlip: boolean): void {
 
     let maxLength = 0;
     let longestStationArray: string[] = [];
@@ -144,38 +146,36 @@ function drawGraphBackgroundSVG(svg:SVGSVGElement, width:number, height:number, 
     const stationCount = longestStationArray.length;
     let stationHeight;
     let stationWidth;
-    if(axisFlip){
+    if (axisFlip) {
         stationHeight = (height - getOffsetY(axisFlip)) / (longestStationArray.length + 1);
         stationWidth = (width - getOffsetX(axisFlip));
-    }
-    else{ //not axis flipped
+    } else { //not axis flipped
         stationHeight = height - getOffsetY(axisFlip);
         stationWidth = (width - getOffsetX(axisFlip)) / (longestStationArray.length + 1);
     }
-    if(axisFlip){
+    if (axisFlip) {
         //Vertical axis labels
-        for(let i = 0; i < longestStationArray.length; i++){
+        for (let i = 0; i < longestStationArray.length; i++) {
             let stationName = longestStationArray[i];
 
             const y = (i + 1) * stationHeight;
             const textElement = document.createElementNS(svgNS, 'text');
-            textElement.setAttribute('x', (getOffsetX(axisFlip)-20).toString());
+            textElement.setAttribute('x', (getOffsetX(axisFlip) - 20).toString());
             textElement.setAttribute('y', (y + getOffsetY(axisFlip)).toString());
             textElement.setAttribute('font-size', '12');
             textElement.setAttribute('fill', 'black');
             textElement.setAttribute('text-anchor', 'end');
-            if(stationName.length < 33){
+            if (stationName.length < 33) {
                 textElement.textContent = stationName;
                 svg.appendChild(textElement);
-            }
-            else{
-                
+            } else {
+
                 const splitPosition = splitLongStationName(stationName);
-                textElement.textContent = stationName.slice(0,splitPosition);
+                textElement.textContent = stationName.slice(0, splitPosition);
                 svg.appendChild(textElement);
                 const secondLine = document.createElementNS(svgNS, 'text');
-                secondLine.setAttribute('x', (getOffsetX(axisFlip)-20).toString());
-                secondLine.setAttribute('y', (y + getOffsetY(axisFlip)+15).toString());
+                secondLine.setAttribute('x', (getOffsetX(axisFlip) - 20).toString());
+                secondLine.setAttribute('y', (y + getOffsetY(axisFlip) + 15).toString());
                 secondLine.setAttribute('font-size', '12');
                 secondLine.setAttribute('fill', 'black');
                 secondLine.setAttribute('text-anchor', 'end');
@@ -192,16 +192,16 @@ function drawGraphBackgroundSVG(svg:SVGSVGElement, width:number, height:number, 
             svg.appendChild(lineElement);
         }
         //horizontal labels
-        for (let time = 0; time <= maxTime-minTime; time ++){
-            const x = ((stationWidth-40)/(maxTime-minTime))*time;
+        for (let time = 0; time <= maxTime - minTime; time++) {
+            const x = ((stationWidth - 40) / (maxTime - minTime)) * time;
             const textElement = document.createElementNS(svgNS, 'text');
-            textElement.setAttribute('x', (x+getOffsetX(axisFlip)).toString());
+            textElement.setAttribute('x', (x + getOffsetX(axisFlip)).toString());
             textElement.setAttribute('y', (getOffsetY(axisFlip)).toString());
             textElement.setAttribute('font-size', '12');
             textElement.setAttribute('fill', 'black');
             textElement.setAttribute('text-anchor', 'middle');
-            let timeLabel:number = time + minTime;
-            if(timeLabel >= 24){
+            let timeLabel: number = time + minTime;
+            if (timeLabel >= 24) {
                 timeLabel -= 24
             }
 
@@ -210,28 +210,27 @@ function drawGraphBackgroundSVG(svg:SVGSVGElement, width:number, height:number, 
 
 
             const lineElement = document.createElementNS(svgNS, 'line');
-            lineElement.setAttribute('x1', (getOffsetX(axisFlip)+x).toString());
-            lineElement.setAttribute('y1', (getOffsetY(axisFlip)+30).toString());
-            lineElement.setAttribute('x2', (getOffsetX(axisFlip)+x).toString());
-            lineElement.setAttribute('y2', (getOffsetY(axisFlip)+20).toString());
+            lineElement.setAttribute('x1', (getOffsetX(axisFlip) + x).toString());
+            lineElement.setAttribute('y1', (getOffsetY(axisFlip) + 30).toString());
+            lineElement.setAttribute('x2', (getOffsetX(axisFlip) + x).toString());
+            lineElement.setAttribute('y2', (getOffsetY(axisFlip) + 20).toString());
             lineElement.setAttribute('stroke', 'rgb(200, 200, 200)');
             svg.appendChild(lineElement);
         }
 
-    }
-    else{  //not axis flipped
+    } else {  //not axis flipped
         //Vertical axis
-        for (let time = 0; time <= maxTime-minTime; time ++) {
+        for (let time = 0; time <= maxTime - minTime; time++) {
             //Time label
-            const y = (stationHeight / (maxTime-minTime)) * time;
+            const y = (stationHeight / (maxTime - minTime)) * time;
             const textElement = document.createElementNS(svgNS, 'text');
-            textElement.setAttribute('x', (getOffsetX(axisFlip)+5).toString());
+            textElement.setAttribute('x', (getOffsetX(axisFlip) + 5).toString());
             textElement.setAttribute('y', (y + getOffsetY(axisFlip)).toString());
             textElement.setAttribute('font-size', '12');
             textElement.setAttribute('fill', 'black');
             textElement.setAttribute('text-anchor', 'end');
-            let timeLabel:number = time + minTime;
-            if(timeLabel >= 24){
+            let timeLabel: number = time + minTime;
+            if (timeLabel >= 24) {
                 timeLabel -= 24
             }
 
@@ -246,7 +245,7 @@ function drawGraphBackgroundSVG(svg:SVGSVGElement, width:number, height:number, 
             lineElement.setAttribute('y2', (y + getOffsetY(axisFlip)).toString());
             lineElement.setAttribute('stroke', 'rgb(200, 200, 200)');
             svg.appendChild(lineElement);
-        
+
         }
 
         const labelOffsetY = -20; // Adjust this value to control the vertical position of the labels
@@ -255,7 +254,7 @@ function drawGraphBackgroundSVG(svg:SVGSVGElement, width:number, height:number, 
             const stationName = longestStationArray[i] as string;
             const x = (i + 1) * stationWidth + getOffsetX(axisFlip);
             const y = labelOffsetY;
-  
+
             // Draw rotated text label
             const textElement = document.createElementNS(svgNS, 'text');
             textElement.setAttribute('x', x.toString());
@@ -270,128 +269,80 @@ function drawGraphBackgroundSVG(svg:SVGSVGElement, width:number, height:number, 
     }
 }
 
-function drawGraphBackground(canvas:HTMLCanvasElement, data: Trip[], axisFlip:boolean): void{
-    const ctx = canvas.getContext('2d');
-
-    if (ctx === null) {
-        console.error('Canvas context is not supported.');
-        return;
+function getPxPerDistance(axisFlip: boolean, maxDistance : number, stations : number): number {
+    let distPerStation = maxDistance / stations;
+    let pxPerStation = (axisFlip ? 1900 : 1080) / stations;
+    if(pxPerStation < (axisFlip ? 1900 : 1080) / 10) {
+        pxPerStation = (axisFlip ? 1900 : 1080) / 10;
     }
+    return pxPerStation / distPerStation;
+}
 
-    let maxLength = 0;
-    let longestStationArray: string[] = [];
+function drawGraphBackground(ctx: CanvasRenderingContext2D, data: StopTime[], axisFlip: boolean, longestStationArray: string[], maxDistance: number, canvas : HTMLCanvasElement, trip: Trip[]): void {
 
-    for (let i = 0; i < data?.length; i++) {
-        const stations = data[i].stations;
-        if (stations.length > maxLength) {
-            maxLength = stations.length;
-            longestStationArray = stations;
-        }
-    }
-    const canvasWidth = canvas.width;
-    const canvasHeight = canvas.height;
-    let stationHeight;
-    let stationWidth;
-    if(axisFlip){
-        stationHeight = (canvasHeight - getOffsetY(axisFlip)) / (longestStationArray.length + 1);
-        stationWidth = (canvasWidth - getOffsetX(axisFlip));
-    }
-    else{ //not axis flipped
-        stationHeight = canvasHeight - getOffsetY(axisFlip);
-        stationWidth = (canvasWidth - getOffsetX(axisFlip)) / (longestStationArray.length + 1);
-    }
+    let pxPerDistance = getPxPerDistance(axisFlip, maxDistance, longestStationArray.length);
+    let pxPerTime = ((axisFlip ? canvas.width : canvas.height)) / ((maxTime - minTime));
 
+    let xOffset = getOffsetX(!axisFlip);
+    let yOffset = getOffsetY(!axisFlip);
+    let labelOffset = 50;
 
-    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     ctx.font = '12px Arial';
     ctx.fillStyle = 'black';
     ctx.strokeStyle = `rgb(200, 200, 200)`;
 
-    if(axisFlip){
-        //Vertical axis labels
-        for(let i = 0; i < longestStationArray.length; i++){
-            let stationName = longestStationArray[i];
 
-            const y = (i + 1) * stationHeight;
-            ctx.textAlign = 'right';
-            if(stationName.length >= 40){
-                const splitPosition = splitLongStationName(stationName);
-                ctx.fillText(stationName.slice(0,splitPosition), getOffsetX(axisFlip)-20, getOffsetY(axisFlip)+ y); // Adjust the position of the text as needed
-                ctx.fillText(stationName.slice(splitPosition), getOffsetX(axisFlip)-20, getOffsetY(axisFlip)+ y+15); // Adjust the position of the text as needed
-            }
-            else{
-                ctx.fillText(stationName, getOffsetX(axisFlip)-20, getOffsetY(axisFlip)+ y); // Adjust the position of the text as needed
-            }
 
-            ctx.beginPath();
-            ctx.moveTo(getOffsetX(axisFlip)-10, y+getOffsetY(axisFlip));
-            ctx.lineTo(canvasWidth, y+getOffsetY(axisFlip));
-            ctx.stroke();
-        }
-        ctx.strokeStyle = 'black';
-        for (let time = 0; time <= maxTime-minTime; time ++){
-            const x = ((stationWidth-40)/(maxTime-minTime))*time;
-            ctx.textAlign = "center";
-            let timeLabel:number = time + minTime;
-            if(timeLabel >= 24){
-                timeLabel -= 24
-            }
-            ctx.fillText(timeLabel.toString() + ':00', getOffsetX(axisFlip)+x, getOffsetY(axisFlip));
-            ctx.beginPath();
-            ctx.moveTo(getOffsetX(axisFlip)+x, getOffsetY(axisFlip)+30);
-            ctx.lineTo(getOffsetX(axisFlip)+x, getOffsetY(axisFlip)+20);
-            ctx.stroke();
-        }
+    let longestLabel = 0;
+    for (let stopTime of data) {
+        let step = stopTime.distance * pxPerDistance;
 
-    }
-    else{ //not axis flipped
-        // Draw vertical axis labels
-        for (let time = 0; time <= maxTime-minTime; time ++) {
-            const y = (stationHeight / (maxTime-minTime)) * time;
-            ctx.textAlign = 'right';
-            let timeLabel:number = time + minTime;
-            if(timeLabel >= 24){
-                timeLabel -= 24
-            }
-            ctx.fillText(timeLabel.toString() + ':00', getOffsetX(axisFlip), y +getOffsetY(axisFlip));
-            ctx.beginPath();
-            ctx.moveTo(getOffsetX(axisFlip)+10, y+getOffsetY(axisFlip));
-            ctx.lineTo(canvasWidth, y+getOffsetY(axisFlip));
-            ctx.stroke();
-        }
-
-        ctx.strokeStyle = 'black';
-        const labelOffsetY = -70; // Adjust this value to control the vertical position of the labels
-        // Draw horizontal axis labels
-        /* for (let i = 0; i < stations.length; i++) {
-            const x = (i + 1) * stationWidth;
-            ctx.textAlign = 'center';
-            ctx.fillText(stations[i] as string, x, getOffsetY(axisFlip)-40);
-            ctx.beginPath();
-            ctx.moveTo(x, getOffsetY(axisFlip)-30);
-            ctx.lineTo(x, getOffsetY(axisFlip)-20);
-            ctx.stroke();
-        }*/
-
-        // Draw diagonal axis labels
-        for (let i = 0; i < longestStationArray.length; i++) {
-            const stationName = longestStationArray[i];
-            const x = (i + 1) * stationWidth;
-            const y = labelOffsetY;
-
-            ctx.translate(x, y);
-            ctx.textAlign = 'left';
-            ctx.rotate(-Math.PI / 4); // Rotate the text by -45 degrees (or any desired angle)
-            ctx.fillText(stationName, -105, getOffsetY(axisFlip)+ 0); // Adjust the position of the text as needed
-            ctx.rotate(Math.PI / 4); // Reset the rotation
-            ctx.translate(-x, -y);
+        ctx.save();
+        ctx.translate(xOffset + (!axisFlip ? step : 0), yOffset + (!axisFlip ? 0 : step));
+        ctx.rotate(!axisFlip ? -Math.PI/2 : 0);
+        ctx.textAlign = !axisFlip ? "right" : "left";
+        ctx.fillText(stopTime.station,  !axisFlip ? labelOffset : -labelOffset, 0, labelOffset);
+        ctx.restore();
+        if(stopTime.station.length > longestLabel) {
+            longestLabel = stopTime.station.length;
         }
     }
+
+    if(!axisFlip) {
+        yOffset += labelOffset;
+    } else {
+        xOffset += labelOffset;
+    }
+    
+    ctx.strokeStyle = 'black';
+    for (let time = 0; time <= maxTime - minTime; time++) {
+        let timeLabel = time + minTime;
+        if (timeLabel >= 24) {
+            timeLabel -= 24
+        }
+        let step = time * pxPerTime;
+
+        // rotate if flip axis
+        ctx.fillText(timeLabel.toString() + ':00',   xOffset + (!axisFlip ? 0 : step), yOffset + (!axisFlip ? step : 0), labelOffset);
+
+        ctx.beginPath();
+        if (!axisFlip) {
+            ctx.moveTo(xOffset, step + yOffset);
+            ctx.lineTo(canvas.width + xOffset, step + yOffset);
+        } else {
+            ctx.moveTo(step + xOffset, yOffset);
+            ctx.lineTo(step + xOffset, canvas.height + yOffset);
+        }
+        ctx.stroke();
+        ctx.closePath();
+    }
+    drawData(canvas, trip, axisFlip, longestStationArray, maxDistance, xOffset, yOffset);
 
 }
 
-function drawDataSVG(svg:SVGSVGElement, data:Trip[], width:number, height:number, axisFlip:boolean):void{
+function drawDataSVG(svg: SVGSVGElement, data: Trip[], width: number, height: number, axisFlip: boolean): void {
     let maxLength = 0;
     let longestStationArray: string[] = [];
 
@@ -405,17 +356,16 @@ function drawDataSVG(svg:SVGSVGElement, data:Trip[], width:number, height:number
     const svgNS = 'http://www.w3.org/2000/svg';
     let stationHeight;
     let stationWidth;
-    if(axisFlip){
+    if (axisFlip) {
         stationHeight = (height - getOffsetY(axisFlip)) / (longestStationArray.length + 1);
         stationWidth = (width - getOffsetX(axisFlip));
-    }
-    else{ //not axis flipped
+    } else { //not axis flipped
         stationHeight = height - getOffsetY(axisFlip);
         stationWidth = (width - getOffsetX(axisFlip)) / (longestStationArray.length + 1);
     }
 
 
-    for(const trip of data){
+    for (const trip of data) {
         let datat: StopTime[] = trip.stops;
         for (let i = 0; i < datat.length - 1; i++) {   //draw one trip
 
@@ -425,24 +375,22 @@ function drawDataSVG(svg:SVGSVGElement, data:Trip[], width:number, height:number
             let index_n = longestStationArray.indexOf(nextConnection.station);
 
             let startX, startY, endX, endY;
-            if(index == -1 || index_n == -1)
-            {
+            if (index == -1 || index_n == -1) {
                 break;
             }
-            if(axisFlip){
-                startX = ((stationWidth-40) / (maxTime*60-minTime*60)) * (translateTimeToMinutes(currentConnection.time)-minTime*60) + getOffsetX(axisFlip);
+            if (axisFlip) {
+                startX = ((stationWidth - 40) / (maxTime * 60 - minTime * 60)) * (translateTimeToMinutes(currentConnection.time) - minTime * 60) + getOffsetX(axisFlip);
                 startY = (longestStationArray.indexOf(currentConnection.station) + 1) * stationHeight + getOffsetY(axisFlip);
-                endX = ((stationWidth-40) / (maxTime*60-minTime*60)) * (translateTimeToMinutes(nextConnection.time)-minTime*60)+getOffsetX(axisFlip);
+                endX = ((stationWidth - 40) / (maxTime * 60 - minTime * 60)) * (translateTimeToMinutes(nextConnection.time) - minTime * 60) + getOffsetX(axisFlip);
                 endY = (longestStationArray.indexOf(nextConnection.station) + 1) * stationHeight + getOffsetY(axisFlip);
-            }
-            else{ //not axis flipped
+            } else { //not axis flipped
                 startX = (longestStationArray.indexOf(currentConnection.station) + 1) * stationWidth + getOffsetX(axisFlip);
-                startY = (stationHeight / (maxTime*60-minTime*60)) * (translateTimeToMinutes(currentConnection.time)-minTime*60) + getOffsetY(axisFlip);
+                startY = (stationHeight / (maxTime * 60 - minTime * 60)) * (translateTimeToMinutes(currentConnection.time) - minTime * 60) + getOffsetY(axisFlip);
                 endX = (longestStationArray.indexOf(nextConnection.station) + 1) * stationWidth + getOffsetX(axisFlip);
-                endY = (stationHeight / (maxTime*60-minTime*60)) * (translateTimeToMinutes(nextConnection.time)-minTime*60)+getOffsetY(axisFlip);
+                endY = (stationHeight / (maxTime * 60 - minTime * 60)) * (translateTimeToMinutes(nextConnection.time) - minTime * 60) + getOffsetY(axisFlip);
             }
-            
-            if(i == 0){
+
+            if (i == 0) {
                 drawStopCircleSVG(svg, startX, startY);
             }
             const line = document.createElementNS(svgNS, 'line');
@@ -452,24 +400,23 @@ function drawDataSVG(svg:SVGSVGElement, data:Trip[], width:number, height:number
             line.setAttribute('y2', endY.toString());
             line.setAttribute('stroke', 'black');
             svg.appendChild(line);
-        
+
             drawStopCircleSVG(svg, endX, endY);
         }
     }
 }
 
-function drawData(canvas:HTMLCanvasElement, data: Trip[], axisFlip:boolean): void{
-    const ctx = canvas.getContext('2d');
-    let maxLength = 0;
-    let longestStationArray: string[] = [];
+function drawPath(ctx: CanvasRenderingContext2D, startX: number, startY: number, endX: number, endY: number) {
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(endX, endY);
+    ctx.closePath();
+    ctx.stroke();
+}
 
-    for (let i = 0; i < data?.length; i++) {
-        const stations = data[i].stations;
-        if (stations.length > maxLength) {
-            maxLength = stations.length;
-            longestStationArray = stations;
-        }
-    }
+function drawData(canvas: HTMLCanvasElement, data: Trip[], axisFlip: boolean, longestStationArray: String[],  maxD: number, xOff: number, yOff : number): void {
+    const ctx = canvas.getContext('2d');
+
     if (ctx === null) {
         console.error('Canvas context is not supported.');
         return;
@@ -479,73 +426,65 @@ function drawData(canvas:HTMLCanvasElement, data: Trip[], axisFlip:boolean): voi
     const canvasHeight = canvas.height;
     let stationHeight;
     let stationWidth;
-    if(axisFlip){
-        stationHeight = (canvasHeight - getOffsetY(axisFlip)) / (longestStationArray.length + 1);
-        stationWidth = (canvasWidth - getOffsetX(axisFlip));
-    }
-    else{ //not axis flipped
-        stationHeight = canvasHeight - getOffsetY(axisFlip);
-        stationWidth = (canvasWidth - getOffsetX(axisFlip)) / (longestStationArray.length + 1);
+    if (axisFlip) {
+        stationHeight = (canvasHeight - yOff) / (longestStationArray.length + 1);
+        stationWidth = (canvasWidth - xOff);
+    } else { //not axis flipped
+        stationHeight = canvasHeight - yOff;
+        stationWidth = (canvasWidth - xOff) / (longestStationArray.length + 1);
     }
     ctx.strokeStyle = 'black';
 
-    
-    for(const trip of data){
-      let datat: StopTime[] = trip.stops;
-      for (let i = 0; i < datat.length - 1; i++) {   //draw one trip
-        const currentConnection = datat[i];
-        const nextConnection = datat[i + 1];
-        let index = longestStationArray.indexOf(currentConnection.station);
-        let index_n = longestStationArray.indexOf(nextConnection.station);
-        //console.log("index_ " + index + " index_n " + index_n);
-        if(index == -1 || index_n == -1)
-        {
-          break;
+
+    for (const trip of data) {
+        let datat: StopTime[] = trip.stops;
+        for (let i = 0; i < datat.length - 1; i++) {   //draw one trip
+            const currentConnection = datat[i];
+            const nextConnection = datat[i + 1];
+            let index = longestStationArray.indexOf(currentConnection.station);
+            let index_n = longestStationArray.indexOf(nextConnection.station);
+            //console.log("index_ " + index + " index_n " + index_n);
+            if (index == -1 || index_n == -1) {
+                break;
+            }
+            //console.log("time: " + currentConnection.time + "currentConnection station " + currentConnection.station + "nextConnection station  " + nextConnection.station);
+            let startX, startY, endX, endY;
+            if (axisFlip) {
+                startX = ((stationWidth - 40) / (maxTime * 60 - minTime * 60)) * (translateTimeToMinutes(currentConnection.time) - minTime * 60) + xOff;
+                startY = (longestStationArray.indexOf(currentConnection.station) + 1) * stationHeight + yOff;
+                endX = ((stationWidth - 40) / (maxTime * 60 - minTime * 60)) * (translateTimeToMinutes(nextConnection.time) - minTime * 60) + xOff;
+                endY = (longestStationArray.indexOf(nextConnection.station) + 1) * stationHeight + yOff;
+            } else { //not axis flipped
+                startX = (longestStationArray.indexOf(currentConnection.station) + 1) * stationWidth + xOff;
+                startY = (stationHeight / (maxTime * 60 - minTime * 60)) * (translateTimeToMinutes(currentConnection.time) - minTime * 60) + yOff;
+                endX = (longestStationArray.indexOf(nextConnection.station) + 1) * stationWidth + xOff;
+                endY = (stationHeight / (maxTime * 60 - minTime * 60)) * (translateTimeToMinutes(nextConnection.time) - minTime * 60) + yOff;
+
+                //ctx.save();
+            }
+            drawPath(ctx, startX, startY, endX, endY);
+            let x = i == 0 ? startX : endX;
+            let y = i == 0 ? startY : endY;
+            let connection = i == 0 ? currentConnection : nextConnection;
+            drawStopCircle(canvas, x, y, trip.name, connection.station, connection.time);
         }
-        //console.log("time: " + currentConnection.time + "currentConnection station " + currentConnection.station + "nextConnection station  " + nextConnection.station);
-        let startX, startY, endX, endY;
-        if(axisFlip){
-            startX = ((stationWidth-40) / (maxTime*60-minTime*60)) * (translateTimeToMinutes(currentConnection.time)-minTime*60) + getOffsetX(axisFlip);
-            startY = (longestStationArray.indexOf(currentConnection.station) + 1) * stationHeight + getOffsetY(axisFlip);
-            endX = ((stationWidth-40) / (maxTime*60-minTime*60)) * (translateTimeToMinutes(nextConnection.time)-minTime*60)+getOffsetX(axisFlip);
-            endY = (longestStationArray.indexOf(nextConnection.station) + 1) * stationHeight + getOffsetY(axisFlip);
-        }
-        else{ //not axis flipped
-            startX = (longestStationArray.indexOf(currentConnection.station) + 1) * stationWidth + getOffsetX(axisFlip);
-            startY = (stationHeight / (maxTime*60-minTime*60)) * (translateTimeToMinutes(currentConnection.time)-minTime*60) + getOffsetY(axisFlip);
-            endX = (longestStationArray.indexOf(nextConnection.station) + 1) * stationWidth + getOffsetX(axisFlip);
-            endY = (stationHeight / (maxTime*60-minTime*60)) * (translateTimeToMinutes(nextConnection.time)-minTime*60)+getOffsetY(axisFlip);
-    
-            //ctx.save();
-        }
-        ctx.beginPath();
-        ctx.moveTo(startX, startY);
-        ctx.lineTo(endX, endY);
-        ctx.closePath();
-        ctx.stroke();
-        if(i == 0){
-            drawStopCircle(canvas, startX, startY, trip.name, currentConnection.station, currentConnection.time);
-        }
-        drawStopCircle(canvas, endX, endY, trip.name, nextConnection.station, nextConnection.time);
     }
-  }
 }
 
 
-
-export function generateSVG(data: Trip[], svg:SVGSVGElement, width:number, height:number, axisFlip:boolean){
+export function generateSVG(data: Trip[], svg: SVGSVGElement, width: number, height: number, axisFlip: boolean) {
 
 
     minTime = findMinTime(data);
     //const minTimeMinutes = findMinTimeMinutes(timetable);
     //const maxTimeMinutes = findMaxTimeMinutes(timetable);
-    maxTime = findMaxTime(data) +1;
-    
+    maxTime = findMaxTime(data) + 1;
+
     drawGraphBackgroundSVG(svg, width, height, data, axisFlip);
     drawDataSVG(svg, data, width, height, axisFlip);
 }
 
-export function generateStringGraph(data: Trip[], axisFlip:boolean): void {
+export function generateStringGraph(data: Trip[], axisFlip: boolean): void {
     const canvas = document.getElementById('graphCanvas') as HTMLCanvasElement;
     const ctx = canvas.getContext('2d');
 
@@ -559,10 +498,30 @@ export function generateStringGraph(data: Trip[], axisFlip:boolean): void {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     minTime = findMinTime(data);
-    maxTime = findMaxTime(data) +1;
+    maxTime = findMaxTime(data) + 1;
+
+    let maxLength = 0;
+    let longestStationArray: string[] = [];
+    let longestStops: StopTime[] = [];
+    let maxDistance = 0;
+    for (let i = 0; i < data?.length; i++) {
+        const stations = data[i].stations;
+        const stops = data[i].stops;
+
+        for (let j = 0; j < stops.length; j++) {
+            const stop = stops[j];
+            if (stop.distance > maxDistance) {
+                maxDistance = stop.distance;
+            }
+        }
+
+        if (stations.length > maxLength) {
+            maxLength = stations.length;
+            longestStationArray = stations;
+            longestStops = stops;
+        }
+    }
 
     // Draw graph backdrop (labels, lines)
-    drawGraphBackground(canvas, data, axisFlip);
-    // Draw lines
-    drawData(canvas, data, axisFlip);
+    drawGraphBackground(ctx, longestStops, axisFlip, longestStationArray, maxDistance, canvas, data);
 }
