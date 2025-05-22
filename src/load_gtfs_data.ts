@@ -40,7 +40,8 @@ function parseRouteData(csvText: string, stopTimesCsvText: string, stopsCsvText:
 
     const stationName = row.stop_name || "";
 
-    // Handle some edge cases that can occur in the station list ordering.
+    // Skip some edge cases that can occur in the station list ordering.
+    // The next stop_name is probably for suitable for the station. 
     if (["bahn", "bus", "sev", "g23", "zugang", "vorplatz"].includes(stationName.toLowerCase()))
       return;
 
