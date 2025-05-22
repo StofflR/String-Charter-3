@@ -28,9 +28,23 @@ function parseRouteData(csvText: string, stopTimesCsvText: string, stopsCsvText:
   const stopsResults = parse(stopsCsvText, { header: true });
   const existingTripIds: Set<string> = new Set<string>();
   const stopsById: Record<string, string> = {};
+
   stopsResults.data.forEach((row: any) => {
+    // Crop the station_id to the first three parts and add its first occurence to the list.
+    // If the station is already added, skip it.
+    let stop_id_parts = row.stop_id.split(":");
+    const cropped_stop_id = stop_id_parts.slice(0, 3).join(":");
+
+    if(cropped_stop_id in stopsById)
+      return;
+
     const stationName = row.stop_name || "";
-    stopsById[row.stop_id] = stationName;
+
+    // Handle some edge cases that can occur in the station list ordering.
+    if (["bahn", "bus", "sev", "g23", "zugang", "vorplatz"].includes(stationName.toLowerCase()))
+      return;
+
+    stopsById[cropped_stop_id] = stationName;
   });
 
   const tripsByRouteId: Record<string, Trip[]> = {};
@@ -60,10 +74,17 @@ function parseRouteData(csvText: string, stopTimesCsvText: string, stopsCsvText:
       stopTimesByTripId[tripId] = [];
     }
 
+    if(row.trip_id == "")
+      return;
+
+    // handle only the main part of the stop id
+    let stop_id_parts = row.stop_id.split(":");
+    const cropped_stop_id = stop_id_parts.slice(0, 3).join(":");
+
     stopTimesByTripId[tripId].push({
       id: row.stop_id,
       tripId: tripId,
-      station: stopsById[row.stop_id],
+      station: stopsById[cropped_stop_id],
       time: row.arrival_time,
       distance: parseFloat(row.shape_dist_traveled),
     });
@@ -90,6 +111,7 @@ function parseRouteData_R(csvText: string): RouteD[] {
   let routes: RouteD[] = results.data.map((row: any) => ({
     id: row.route_id,
     name: row.route_short_name,
+    shortname: row.route_short_name,
     trips: [],
   }));
   return routes;
