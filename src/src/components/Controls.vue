@@ -7,45 +7,17 @@ import { generateSVG, generateStringGraph } from '../../string_graph';
 let trips: Trip[];
 let loadedRoutes: RouteD[] = [];
 
-function getFlipAxisValue(): boolean {
-  const checkbox = document.getElementById('axis-switch') as HTMLInputElement;
-  return checkbox.checked;
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  const canvas = document.getElementById('graphCanvas') as HTMLCanvasElement;
-  const exportButton = document.getElementById('exportButton');
-
-  if (exportButton == null) {
-    console.error('SVG export not supported');
-    return;
-  }
-
-  exportButton.addEventListener('click', () => {
-
-    exportAsSVG(canvas);
-
-  });
-});
-
-function flipAxisToggle(event: Event) {
-  const target = event.target as HTMLInputElement;
-  const isChecked = target.checked;
-  console.log('Checkbox value changed:', isChecked);
-  generateStringGraph(trips, getFlipAxisValue());
-}
-
-
 const routeNames = ref([]);
 const fileNameLabel = ref("Drag & drop a GTFS zip file here, or <span class='text-blue-600 underline'>click to select</span>");
 const route_selected = ref('')
+const flip_axis = ref(false);
 
 async function routeSelect(e: Event) {
   const selectedRoute = loadedRoutes.find((route) => route.name === route_selected.value);
   trips = selectedRoute?.trips as Trip[];
 
   if(trips)
-    generateStringGraph(trips, getFlipAxisValue());
+    generateStringGraph(trips, flip_axis.value);
 }
 
 
@@ -97,7 +69,7 @@ async function handleGtfsUpload(files: FileList) {
       
       const selectedRoute = loadedRoutes.at(0);
       if (selectedRoute) {
-        generateStringGraph(selectedRoute.trips, getFlipAxisValue());
+        generateStringGraph(selectedRoute.trips, flip_axis.value);
       }
     }
 }
@@ -122,7 +94,8 @@ const onDrop = (event: DragEvent) => {
 }
 
 
-function exportAsSVG(canvas: HTMLCanvasElement): void {
+function exportAsSVG() {
+  const canvas = document.getElementById('graphCanvas') as HTMLCanvasElement;
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 
   while (svg.firstChild) {
@@ -134,7 +107,7 @@ function exportAsSVG(canvas: HTMLCanvasElement): void {
   svg.setAttribute('height', canvas.height.toString());
   svg.setAttribute('font-family', 'Verdana');
 
-  generateSVG(trips, svg, canvas.width, canvas.height, getFlipAxisValue());
+  generateSVG(trips, svg, canvas.width, canvas.height, flip_axis.value);
 
 
 
@@ -196,13 +169,18 @@ const filteredRoutes = computed(() => {
         <label for="axis-switch" class="flex items-center cursor-pointer">
           <span class="mr-3 text-gray-700 font-medium">Flip Axis</span>
           <div class="relative">
-            <input id="axis-switch" type="checkbox" class="sr-only peer" @change="flipAxisToggle">
+            <input id="axis-switch" type="checkbox" class="sr-only peer" @change="generateStringGraph(trips, flip_axis)" v-model="flip_axis">
             <div class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-blue-500 transition"></div>
             <div
               class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow peer-checked:translate-x-5 transition">
             </div>
           </div>
         </label>
+      </div>
+      <div class="flex items-center justify-center mt-4 mx-2">
+        <button id="exportButton" @click="exportAsSVG"
+        class="mt-6 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold rounded-full shadow-md transition transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400">Export
+        as SVG</button>
       </div>
     </div>
   </div>
