@@ -56,7 +56,7 @@ async function handleGtfsUpload(files: FileList) {
         if (longestArray.length > 0) {
           const firstStation = longestArray[0];
           const lastStation = longestArray[longestArray.length - 1];
-          const routeString = `${firstStation} -> ${lastStation}`;
+          const routeString = `${route.shortname}: ${firstStation} ↔ ${lastStation}`;
           if (!routeNames.value.includes(routeString)) {
             routeNames.value.push(routeString);
           }
