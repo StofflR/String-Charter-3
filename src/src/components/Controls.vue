@@ -36,42 +36,32 @@ function flipAxisToggle(event: Event) {
 }
 
 
-let routeNames = ref([]);
+const routeNames = ref([]);
+const fileNameLabel = ref("Drag & drop a GTFS zip file here, or <span class='text-blue-600 underline'>click to select</span>");
+const route_selected = ref('')
 
-document.addEventListener('DOMContentLoaded', () => {
-  const fileInput = document.getElementById('file-input') as HTMLInputElement;
-  const routeSelect = document.getElementById('route-select') as HTMLSelectElement;
-  const fileNameLabel = document.getElementById('file-name-label') as HTMLElement;
+async function routeSelect(e: Event) {
+  const selectedRoute = loadedRoutes.find((route) => route.name === route_selected.value);
+  trips = selectedRoute?.trips as Trip[];
 
-  fileInput.addEventListener('change', async () => {
-    if (fileInput == null || fileInput.files == null) {
-      return;
-    }
-    if (fileInput.files.length) {
-      fileNameLabel.textContent = `Selected file: ${fileInput.files[0].name}`;
-    }
+  if(trips)
+    generateStringGraph(trips, getFlipAxisValue());
+}
 
-    const file = fileInput.files?.[0];
+
+function handleUploadButton(e: Event) {
+  const inputElement = e.target as HTMLInputElement;
+  
+  if (inputElement && inputElement.files && inputElement.files.length > 0)
+    handleGtfsUpload(inputElement.files);
+}
+
+async function handleGtfsUpload(files: FileList) {
+    const file = files[0];
+    console.log(file);
+    fileNameLabel.value = `Selected file: ${file.name}`;
     routeNames.value = []
 
-    if (routeSelect) {
-      routeSelect.addEventListener('change', async () => {
-        if (routeSelect.value == null) {
-          return;
-        }
-        const stringGraphCard = document.getElementById('string-graph-card');
-
-        stringGraphCard!.style.display = 'flex';
-        const selectedRouteName = routeSelect.value;
-        const selectedRoute = loadedRoutes.find((route) => route.name === selectedRouteName);
-        trips = selectedRoute?.trips as Trip[];
-        if (selectedRoute) {
-          const file = fileInput.files?.[0];
-          if (file)
-            generateStringGraph(selectedRoute.trips, getFlipAxisValue());
-        }
-      });
-    }
     if (file) {
 
       const routes = await loadGTFSData(file);
@@ -104,41 +94,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
       loadedRoutes = routes;
-      //await populateRouteSelect(routeNames);
+      
       const selectedRoute = loadedRoutes.at(0);
       if (selectedRoute) {
         generateStringGraph(selectedRoute.trips, getFlipAxisValue());
       }
     }
-  });
+}
 
 
-  const dropArea = document.getElementById('drop-area') as HTMLElement;
+const fileInput = ref<HTMLInputElement | null>(null);
+const isDragging = ref(false);
 
-  dropArea.addEventListener('click', () => fileInput.click());
+const onDragOver = () => {
+  isDragging.value = true;
+}
 
-  dropArea.addEventListener('dragover', (e: DragEvent) => {
-    e.preventDefault();
-    dropArea.classList.add('bg-gray-200');
-  });
+const onDragLeave = () => {
+  isDragging.value = false;
+}
 
-  dropArea.addEventListener('dragleave', () => {
-    dropArea.classList.remove('bg-gray-200');
-  });
-
-  dropArea.addEventListener('drop', (e: DragEvent) => {
-    e.preventDefault();
-    dropArea.classList.remove('bg-gray-200');
-    if (e.dataTransfer?.files.length) {
-      fileInput.files = e.dataTransfer.files;
-      // Handle the file as needed
-    }
-  });
-
-
-
-
-});
+const onDrop = (event: DragEvent) => {
+  isDragging.value = false;
+  const files = event.dataTransfer?.files
+  if (files && files.length > 0)
+    handleGtfsUpload(files);
+}
 
 
 function exportAsSVG(canvas: HTMLCanvasElement): void {
@@ -188,12 +169,11 @@ const filteredRoutes = computed(() => {
     <div id="controls">
       <h1>String Charter 3</h1>
       <label for="drop-area" class="mt-8">Select a GTFS zip</label>
-      <div id="drop-area"
+      <div @dragover.prevent="onDragOver" @dragleave.prevent="onDragLeave" @drop.prevent="onDrop"
+    :class="{ 'bg-gray-200': isDragging }" id="drop-area" @click="fileInput?.click()"
         class="border-2 border-dashed border-gray-400 rounded-lg p-8 text-center cursor-pointer transition hover:bg-gray-100 ">
-        <p>Drag & drop a GTFS zip file here, or <span class="text-blue-600 underline">click to
-            select</span>
-        </p>
-        <input type="file" id="file-input" accept=".zip" class="hidden" />
+        <p v-html="fileNameLabel"></p>
+        <input ref="fileInput" @change="handleUploadButton" type="file" id="file-input" accept=".zip" class="hidden" />
       </div>
   
       <div class="mt-2text-gray-700" id="file-name-label"></div>
@@ -203,7 +183,7 @@ const filteredRoutes = computed(() => {
 
       <label for="route-select" class="mt-6">Select a route:</label>
       <div>
-        <select size="10" id="route-select"
+        <select @change="routeSelect" v-model="route_selected" size="10" id="route-select"
           class="block w-full appearance-none bg-white border border-gray-300 text-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
           <!-- <option disabled selected value> -- select a route -- </option> -->
           <option v-for="option in filteredRoutes" :key="option" :value="option" 
