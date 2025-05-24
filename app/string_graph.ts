@@ -1,6 +1,7 @@
 import { Trip, StopTime} from "./interfaces.ts";
- let minTime = 0;
- let maxTime = 0;
+let minTime = 0;
+let maxTime = 0;
+let eventHandlers: ((event: MouseEvent) => void)[] = [];
 
 function getOffsetX(axisFlip:boolean):number{
     if(axisFlip){
@@ -103,23 +104,25 @@ function createMouseOverStopInfo(canvas: HTMLCanvasElement, posX:number, posY:nu
     const relativeX = posX / canvas.width;
     const relativeY = posY / canvas.height;
 
-
-    canvas.addEventListener('mousemove', (event: MouseEvent) => {
+    let mouseOverHandler: (event: MouseEvent) => void;
+    mouseOverHandler = (event: MouseEvent) => {
         const rect = canvas.getBoundingClientRect();
         const mouseX = event.clientX - rect.left;
         const mouseY = event.clientY - rect.top;
         const relativeMouseX = mouseX / rect.width;
         const relativeMouseY = mouseY / rect.height;
-    
+
         // Calculate the distance between the mouse coordinates and the center of the arc
-        const distance = Math.sqrt(Math.pow(relativeMouseX - relativeX, 2) * canvas.width + Math.pow(relativeMouseY - relativeY, 2)* canvas.height);
-    
+        const distance = Math.sqrt(Math.pow(relativeMouseX - relativeX, 2) * canvas.width + Math.pow(relativeMouseY - relativeY, 2) * canvas.height);
+
         // Check if the distance is within the arc radius
         if (distance <= rad) {
-          stopDetailElement.textContent = trip+' stopping at: '+stop+ ', time: '+ time;
+            stopDetailElement.textContent = trip + ' stopping at: ' + stop + ', time: ' + time;
         }
-      });
-    
+    };
+    eventHandlers.push(mouseOverHandler);
+    canvas.addEventListener('mousemove', mouseOverHandler);
+
       canvas.addEventListener('mouseout', () => {
         stopDetailElement.textContent = ' --- hover over a stop to see details --- ';
       });
@@ -609,6 +612,10 @@ export function generateSVG(data: Trip[], svg:SVGSVGElement, width:number, heigh
 export function generateStringGraph(data: Trip[], axisFlip:boolean): void {
     const canvas = document.getElementById('graphCanvas') as HTMLCanvasElement;
     const ctx = canvas.getContext('2d');
+
+    for (let eventHandler of eventHandlers) {
+        canvas.removeEventListener('mousemove', eventHandler);
+    }
 
     canvas.width = 1900
     canvas.height = 1080
