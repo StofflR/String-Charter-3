@@ -8,8 +8,8 @@ const host = process.env.TAURI_DEV_HOST;
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
-
-  root: 'src', // <== tells Vite where your app lives
+  base: "https://stofflr.github.io/String-Charter-3/",
+  root: './', // <== tells Vite where your app lives
   plugins: [
     tailwindcss(), 
     vue()],
@@ -20,7 +20,7 @@ export default defineConfig(async () => ({
   // 2. tauri expects a fixed port, fail if that port is not available
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src/src'), // allows `@/` imports
+      '@': path.resolve(__dirname, './app/src'), // allows `@/` imports
     },
   },
   server: {
