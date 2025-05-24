@@ -452,22 +452,18 @@ function drawDataSVG(svg:SVGSVGElement, data:Trip[], width:number, height:number
     }
 }
 
-function drawData(canvas:HTMLCanvasElement, data: Trip[], axisFlip:boolean): void{
-    const ctx = canvas.getContext('2d');
-    let maxLength = 0;
-    let longestStationArray: string[] = [];
+function getAllStations(data: Trip[]): string[] {
+    let allStations: string[] = [];
     let holdbackStations: string[] = [];
+    let maxLength = 0;
 
+    // Go through all trips to find the longest one.
     for (let i = 0; i < data?.length; i++) {
         const stations = data[i].stations;
         if (stations.length > maxLength) {
             maxLength = stations.length;
-            longestStationArray = stations;
+            allStations = stations;
         }
-    }
-    if (ctx === null) {
-        console.error('Canvas context is not supported.');
-        return;
     }
 
     // Go through all trips and add stations that are not in the station array yet (longestStationArray).
@@ -475,11 +471,11 @@ function drawData(canvas:HTMLCanvasElement, data: Trip[], axisFlip:boolean): voi
         const stations = data[i].stations;
         for (let j = 0; j < stations.length; j++) {
             const station = stations[j];
-            if(!longestStationArray.includes(station)) {
+            if(!allStations.includes(station)) {
 
-                let prevprev = longestStationArray.indexOf(stations[j-2]);
-                let prev = longestStationArray.indexOf(stations[j-1]);
-                let next = longestStationArray.indexOf(stations[j+1]);
+                let prevprev = allStations.indexOf(stations[j-2]);
+                let prev = allStations.indexOf(stations[j-1]);
+                let next = allStations.indexOf(stations[j+1]);
                 
                 if(prev == -1 && next == -1){
                     // The previous and next station are unknown, skip for later.
@@ -487,27 +483,27 @@ function drawData(canvas:HTMLCanvasElement, data: Trip[], axisFlip:boolean): voi
                 } else if (next == prev + 1) {
                     // The previous and next station are known and right after each other.
                     // Add it in between.
-                    longestStationArray.splice(prev+1, 0, station);
+                    allStations.splice(prev+1, 0, station);
                 } else if (prev == next + 1) {
                     // The previous and next station are known and right after each other.
                     // Add it in between (reverse order).
-                    longestStationArray.splice(next+1, 0, station);
-                } else if (prev == longestStationArray.length-1) {
+                    allStations.splice(next+1, 0, station);
+                } else if (prev == allStations.length-1) {
                     // The previous station is the last station.
                     // Add it to the end.
-                    longestStationArray.splice(prev+1, 0, station);
+                    allStations.splice(prev+1, 0, station);
                 } else if (prevprev != -1 && prev != -1 && prevprev > prev) {
                     // The previous two stations are known, but in different order.
                     // Add it after the second.
-                    longestStationArray.splice(prev, 0, station);
+                    allStations.splice(prev, 0, station);
                 } else if (prevprev != -1 && next == -1) {
                     // The next station is unknown, but the previous and previous-previous station are known.
                     // Add it after the previous station.
-                    longestStationArray.splice(prev+1, 0, station);
+                    allStations.splice(prev+1, 0, station);
                 } else if (prevprev != -1 && prev == -1) {
                     // The previous two stations are known.
                     // Add it after them.
-                    longestStationArray.splice(next-1, 0, station);
+                    allStations.splice(next-1, 0, station);
                 } else {
                     // No matching pattern found, keep the station name for later.
                     holdbackStations.push(station);
@@ -518,23 +514,34 @@ function drawData(canvas:HTMLCanvasElement, data: Trip[], axisFlip:boolean): voi
 
     // Add stations that didn't fit at the end.
     for (let i = 0; i < holdbackStations.length; i++) {
-        if(!longestStationArray.includes(holdbackStations[i])) {
-            longestStationArray.push(holdbackStations[i]);
+        if(!allStations.includes(holdbackStations[i])) {
+            allStations.push(holdbackStations[i]);
         }
     }
 
+    return allStations;
+}
+
+function drawData(canvas:HTMLCanvasElement, data: Trip[], axisFlip:boolean): void{
+    const ctx = canvas.getContext('2d');
+    const allStations = getAllStations(data);
+
+    if (ctx === null) {
+        console.error('Canvas context is not supported.');
+        return;
+    }
 
     const canvasWidth = canvas.width;
     const canvasHeight = canvas.height;
     let stationHeight;
     let stationWidth;
     if(axisFlip){
-        stationHeight = (canvasHeight - getOffsetY(axisFlip)) / (longestStationArray.length + 1);
+        stationHeight = (canvasHeight - getOffsetY(axisFlip)) / (allStations.length + 1);
         stationWidth = (canvasWidth - getOffsetX(axisFlip));
     }
     else{ //not axis flipped
         stationHeight = canvasHeight - getOffsetY(axisFlip);
-        stationWidth = (canvasWidth - getOffsetX(axisFlip)) / (longestStationArray.length + 1);
+        stationWidth = (canvasWidth - getOffsetX(axisFlip)) / (allStations.length + 1);
     }
         ctx.strokeStyle = 'black';
 
@@ -544,8 +551,8 @@ function drawData(canvas:HTMLCanvasElement, data: Trip[], axisFlip:boolean): voi
       for (let i = 0; i < datat.length - 1; i++) {   //draw one trip
         const currentConnection = datat[i];
         const nextConnection = datat[i + 1];
-        let index = longestStationArray.indexOf(currentConnection.station);
-        let index_n = longestStationArray.indexOf(nextConnection.station);
+        let index = allStations.indexOf(currentConnection.station);
+        let index_n = allStations.indexOf(nextConnection.station);
         //console.log("index_ " + index + " index_n " + index_n);
         if(index == -1 || index_n == -1)
         {
@@ -555,14 +562,14 @@ function drawData(canvas:HTMLCanvasElement, data: Trip[], axisFlip:boolean): voi
         let startX, startY, endX, endY;
         if(axisFlip){
             startX = ((stationWidth-40) / (maxTime*60-minTime*60)) * (translateTimeToMinutes(currentConnection.time)-minTime*60) + getOffsetX(axisFlip);
-            startY = (longestStationArray.indexOf(currentConnection.station) + 1) * stationHeight + getOffsetY(axisFlip);
+            startY = (allStations.indexOf(currentConnection.station) + 1) * stationHeight + getOffsetY(axisFlip);
             endX = ((stationWidth-40) / (maxTime*60-minTime*60)) * (translateTimeToMinutes(nextConnection.time)-minTime*60)+getOffsetX(axisFlip);
-            endY = (longestStationArray.indexOf(nextConnection.station) + 1) * stationHeight + getOffsetY(axisFlip);
+            endY = (allStations.indexOf(nextConnection.station) + 1) * stationHeight + getOffsetY(axisFlip);
         }
         else{ //not axis flipped
-            startX = (longestStationArray.indexOf(currentConnection.station) + 1) * stationWidth + getOffsetX(axisFlip);
+            startX = (allStations.indexOf(currentConnection.station) + 1) * stationWidth + getOffsetX(axisFlip);
             startY = (stationHeight / (maxTime*60-minTime*60)) * (translateTimeToMinutes(currentConnection.time)-minTime*60) + getOffsetY(axisFlip);
-            endX = (longestStationArray.indexOf(nextConnection.station) + 1) * stationWidth + getOffsetX(axisFlip);
+            endX = (allStations.indexOf(nextConnection.station) + 1) * stationWidth + getOffsetX(axisFlip);
             endY = (stationHeight / (maxTime*60-minTime*60)) * (translateTimeToMinutes(nextConnection.time)-minTime*60)+getOffsetY(axisFlip);
     
             //ctx.save();
