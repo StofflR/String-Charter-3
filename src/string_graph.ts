@@ -297,7 +297,6 @@ function drawGraphBackground(canvas:HTMLCanvasElement, data: Trip[], axisFlip:bo
     }
 
 
-    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
     ctx.font = '12px Arial';
     ctx.fillStyle = 'black';
@@ -457,6 +456,7 @@ function drawData(canvas:HTMLCanvasElement, data: Trip[], axisFlip:boolean): voi
     const ctx = canvas.getContext('2d');
     let maxLength = 0;
     let longestStationArray: string[] = [];
+    let holdbackStations: string[] = [];
 
     for (let i = 0; i < data?.length; i++) {
         const stations = data[i].stations;
@@ -470,6 +470,60 @@ function drawData(canvas:HTMLCanvasElement, data: Trip[], axisFlip:boolean): voi
         return;
     }
 
+    // Go through all trips and add stations that are not in the station array yet (longestStationArray).
+    for (let i = 0; i < data?.length; i++) {
+        const stations = data[i].stations;
+        for (let j = 0; j < stations.length; j++) {
+            const station = stations[j];
+            if(!longestStationArray.includes(station)) {
+
+                let prevprev = longestStationArray.indexOf(stations[j-2]);
+                let prev = longestStationArray.indexOf(stations[j-1]);
+                let next = longestStationArray.indexOf(stations[j+1]);
+                
+                if(prev == -1 && next == -1){
+                    // The previous and next station are unknown, skip for later.
+                    holdbackStations.push(station);
+                } else if (next == prev + 1) {
+                    // The previous and next station are known and right after each other.
+                    // Add it in between.
+                    longestStationArray.splice(prev+1, 0, station);
+                } else if (prev == next + 1) {
+                    // The previous and next station are known and right after each other.
+                    // Add it in between (reverse order).
+                    longestStationArray.splice(next+1, 0, station);
+                } else if (prev == longestStationArray.length-1) {
+                    // The previous station is the last station.
+                    // Add it to the end.
+                    longestStationArray.splice(prev+1, 0, station);
+                } else if (prevprev != -1 && prev != -1 && prevprev > prev) {
+                    // The previous two stations are known, but in different order.
+                    // Add it after the second.
+                    longestStationArray.splice(prev, 0, station);
+                } else if (prevprev != -1 && next == -1) {
+                    // The next station is unknown, but the previous and previous-previous station are known.
+                    // Add it after the previous station.
+                    longestStationArray.splice(prev+1, 0, station);
+                } else if (prevprev != -1 && prev == -1) {
+                    // The previous two stations are known.
+                    // Add it after them.
+                    longestStationArray.splice(next-1, 0, station);
+                } else {
+                    // No matching pattern found, keep the station name for later.
+                    holdbackStations.push(station);
+                }
+            }
+        }
+    }
+
+    // Add stations that didn't fit at the end.
+    for (let i = 0; i < holdbackStations.length; i++) {
+        if(!longestStationArray.includes(holdbackStations[i])) {
+            longestStationArray.push(holdbackStations[i]);
+        }
+    }
+
+
     const canvasWidth = canvas.width;
     const canvasHeight = canvas.height;
     let stationHeight;
@@ -482,9 +536,9 @@ function drawData(canvas:HTMLCanvasElement, data: Trip[], axisFlip:boolean): voi
         stationHeight = canvasHeight - getOffsetY(axisFlip);
         stationWidth = (canvasWidth - getOffsetX(axisFlip)) / (longestStationArray.length + 1);
     }
-    ctx.strokeStyle = 'black';
+        ctx.strokeStyle = 'black';
 
-    
+
     for(const trip of data){
       let datat: StopTime[] = trip.stops;
       for (let i = 0; i < datat.length - 1; i++) {   //draw one trip
@@ -553,8 +607,8 @@ export function generateStringGraph(data: Trip[], axisFlip:boolean): void {
     minTime = findMinTime(data);
     maxTime = findMaxTime(data) +1;
 
-    // Draw graph backdrop (labels, lines)
-    drawGraphBackground(canvas, data, axisFlip);
     // Draw lines
     drawData(canvas, data, axisFlip);
+    // Draw graph backdrop (labels, lines)
+    drawGraphBackground(canvas, data, axisFlip);
 }
