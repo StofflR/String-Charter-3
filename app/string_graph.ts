@@ -2,7 +2,7 @@ import { Trip, StopTime} from "./interfaces.ts";
 import {CanvasGenerator} from "./src/CanvasGenerator.ts";
 import {SVGGenerator} from "./src/SVGGenerator.ts";
 
-let eventHandlers: ((event: MouseEvent) => void)[] = [];
+let canvasGenerator : CanvasGenerator | null = null;
 
 
 export function generateSVG(data: Trip[], svg:SVGSVGElement, width:number, height:number, axisFlip:boolean){
@@ -11,6 +11,9 @@ export function generateSVG(data: Trip[], svg:SVGSVGElement, width:number, heigh
 }
 
 export function generateStringGraph(data: Trip[], axisFlip:boolean): void {
+    if(canvasGenerator)
+        canvasGenerator.resetEventHandlers();
+
     const canvas = document.getElementById('graphCanvas') as HTMLCanvasElement;
     canvas.width = 1900;
     canvas.height = 1080;
@@ -18,8 +21,6 @@ export function generateStringGraph(data: Trip[], axisFlip:boolean): void {
         console.error('Canvas element not found.');
         return;
     }
-    let canvasGenerator = new CanvasGenerator(canvas, eventHandlers, data, axisFlip);
-    canvasGenerator.resetEventHandlers();
+    canvasGenerator = new CanvasGenerator(canvas, data, axisFlip);
     canvasGenerator.generate();
-    eventHandlers = canvasGenerator.getEventHandlers();
 }
