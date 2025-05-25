@@ -5,6 +5,8 @@ This template should help get you started developing with Tauri in vanilla HTML,
 ## Recommended IDE Setup
 
 - [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+or
+- [WebStorm](https://www.jetbrains.com/webstorm/)
 
 ## Requirements
 To run the app yarn is required. See https://yarnpkg.com/getting-started/install on how to install yarn.
@@ -26,3 +28,10 @@ Note: Once Rust is installed the console needs to be refreshed to properly work.
 
 To execute the tauri dev build run `yarn tauri dev` and `yarn tauri build` to build the application.
 The generated build can be found in the folder _./src-tauri/target/\*type\*/bundle_.
+
+### Deploying Github pages
+To deploy the application the branch _gh-pages_ needs to exist in your repo and Github pages need to be activated on Github as well.
+Running `yarn run deploy` will push to the branch and the page will be visible. For this repo the corresponding page is [String Charter 3](https://stofflr.github.io/String-Charter-3/).
+
+### Data sources
+* [GTFS_OP_2025_obb.zip](https://data.oebb.at/de/datensaetze~soll-fahrplan-gtfs~), ÖBB-Personenverkehr AG, CC BY 4.0
