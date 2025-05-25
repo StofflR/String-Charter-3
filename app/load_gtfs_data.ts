@@ -21,13 +21,13 @@ export async function loadGTFSData(file: File): Promise<RouteD[]> {
 
   return trips;
 }
+const stopsById: Record<string, string> = {};
 
 function parseRouteData(csvText: string, stopTimesCsvText: string, stopsCsvText: string, routes_: RouteD[]): RouteD[] {
   const results = parse(csvText, { header: true });
   const stopTimesResults = parse(stopTimesCsvText, { header: true });
   const stopsResults = parse(stopsCsvText, { header: true });
   const existingTripIds: Set<string> = new Set<string>();
-  const stopsById: Record<string, string> = {};
 
   stopsResults.data.forEach((row: any) => {
     // Crop the station_id to the first three parts and add its first occurence to the list.
@@ -83,7 +83,7 @@ function parseRouteData(csvText: string, stopTimesCsvText: string, stopsCsvText:
     const cropped_stop_id = stop_id_parts.slice(0, 3).join(":");
 
     stopTimesByTripId[tripId].push({
-      id: row.stop_id,
+      id: cropped_stop_id,
       tripId: tripId,
       station: stopsById[cropped_stop_id],
       time: row.arrival_time,
@@ -118,18 +118,13 @@ function parseRouteData_R(csvText: string): RouteD[] {
   return routes;
 }
 
-export function getStations(trips: Trip[]): string[] {
-  let stationSet = new Set<string>();
-
+export function getStations(trips: Trip[]): void {
   for (const trip of trips) {
-    stationSet.clear();
+    let stationSet = new Set<string>();
     for (let i = 0; i < trip.stops.length; i++) {
-      const stationName = trip.stops[i].station;
-      stationSet.add(stationName);
+      const cropped_stop_id = trip.stops[i].id;
+      stationSet.add(stopsById[cropped_stop_id]);
     }
     trip.stations = Array.from(stationSet);
   }
-
-  const stations = Array.from(stationSet);
-  return stations;
 }

@@ -5,7 +5,7 @@ description = "A String Chart visualisation app"
 authors = [""]
 license = "MIT"
 repository = "git@github.com:StofflR/String-Charter-3.git"
-edition = "2021"5
+edition = "2021"
 rust-version = "1.77.2"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
