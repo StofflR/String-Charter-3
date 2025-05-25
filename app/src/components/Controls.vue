@@ -188,7 +188,7 @@ const filteredRoutes = computed(() => {
       <a @click="clearRouteFilter()">Clear</a>  
       <div>
         <div id="route-select"
-          class="block w-full appearance-none bg-white border border-gray-300 text-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
+          class="h-100 overflow-scroll block w-full appearance-none bg-white border border-gray-300 text-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
           <!-- <option disabled selected value> -- select a route -- </option> -->
           <div @click="toggleSelection(option)" :class="{ 'bg-gray-200': routes_selected.includes(option) }"
           v-for="option in filteredRoutes" :key="option" :value="option" 
