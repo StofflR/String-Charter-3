@@ -14,6 +14,9 @@ export function getAllStations(data: Trip[]): string[] {
         }
     }
 
+    // Deep copy.
+    allStations = allStations.slice();
+
     // Go through all trips and add stations that are not in the station array yet (longestStationArray).
     for (let i = 0; i < data?.length; i++) {
         const stations = data[i].stations;

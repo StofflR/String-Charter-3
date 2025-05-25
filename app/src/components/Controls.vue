@@ -36,6 +36,13 @@ function toggleSelection(route: string) {
   routeUpdate();
 }
 
+function clearRouteFilter() {
+  routes_selected.value = [];
+  routeFilter.value = "";
+  showOnlySelected.value = false;
+  routeUpdate();
+}
+
 function handleUploadButton(e: Event) {
   const inputElement = e.target as HTMLInputElement;
   
@@ -83,8 +90,8 @@ async function handleGtfsUpload(files: FileList) {
       loadedRoutes = routes;
       
       const selectedRoute = loadedRoutes.at(0);
-      if (selectedRoute) {
-        generateStringGraph(selectedRoute.trips, flip_axis.value);
+      if (selectedRoute && selectedRoute.trips.length < 20) {
+         generateStringGraph(selectedRoute.trips, flip_axis.value);
       }
     }
 }
@@ -143,10 +150,17 @@ function exportAsSVG() {
 }
 
 let routeFilter = ref('');
+let showOnlySelected = ref(false);
+
 const filteredRoutes = computed(() => {
-  return routeNames.value.filter(option => 
-    option.toLowerCase().includes(routeFilter.value.toLocaleLowerCase())
-  )
+  if (showOnlySelected.value){
+    return routes_selected.value;
+  }
+  else {
+    return routeNames.value.filter(option => 
+      option.toLowerCase().includes(routeFilter.value.toLocaleLowerCase())
+    )
+  }
 });
 
 </script>
@@ -170,6 +184,8 @@ const filteredRoutes = computed(() => {
       <input id="rout-filter" v-model="routeFilter" class="block w-full appearance-none bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
 
       <label for="route-select" class="mt-6">Select a route:</label>
+      <input type="checkbox" v-model="showOnlySelected" />Show Selected
+      <a @click="clearRouteFilter()">Clear</a>  
       <div>
         <div id="route-select"
           class="block w-full appearance-none bg-white border border-gray-300 text-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
