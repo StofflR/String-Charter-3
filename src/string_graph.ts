@@ -1,6 +1,6 @@
 import {Trip} from "./interfaces";
-import {CanvasGenerator} from "./CanvasGenerator";
-import {SVGGenerator} from "./SVGGenerator";
+import {CanvasGenerator} from "./chartgen/CanvasGenerator.ts";
+import {SVGGenerator} from "./chartgen/SVGGenerator.ts";
 
 let canvasGenerator: CanvasGenerator | null = null;
 

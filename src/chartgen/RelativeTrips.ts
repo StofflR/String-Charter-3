@@ -1,5 +1,5 @@
-import {NormalizedTrip, RelativeStop, StopTime, Trip} from "./interfaces.ts";
-import {translateTimeToMinutes} from "./Utility.ts";
+import {NormalizedTrip, RelativeStop, Trip} from "../interfaces";
+import {translateTimeToMinutes} from "../Utility";
 
 export class RelativeTrips {
     public maxDistance: number = 0;

@@ -1,5 +1,5 @@
-import {Trip} from "./interfaces";
-import {StringChartGenerator} from "./StringChartGenerator";
+import {Trip} from "../interfaces.ts";
+import {StringChartGenerator} from "./StringChartGenerator.ts";
 
 export class CanvasGenerator extends StringChartGenerator {
     private readonly canvas: HTMLCanvasElement;

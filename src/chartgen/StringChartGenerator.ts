@@ -1,9 +1,8 @@
-import {RelativeStop, StopTime, Trip} from "./interfaces";
+import {RelativeStop, Trip} from "../interfaces";
 import {
     getAllStations,
-    splitLongStationName,
-    translateTimeToMinutes
-} from "./Utility";
+    splitLongStationName
+} from "../Utility";
 import {RelativeTrips} from "./RelativeTrips";
 
 export class StringChartGenerator {
@@ -43,7 +42,7 @@ export class StringChartGenerator {
         }
     }
 
-    private drawLabels() {
+    public drawLabels() {
         this.drawXLabels();
         this.drawYLabels();
     }
@@ -95,12 +94,12 @@ export class StringChartGenerator {
         }
     }
 
-    public drawLine(startX: number, startY: number, endX: number, endY: number, color: string = ""): void {
+    public drawLine(_startX: number, _startY: number, _endX: number, _endY: number, _color: string = ""): void {
         // This method should be overridden in subclasses to draw the line
         throw ('drawLine method not implemented');
     }
 
-    public drawStopCircle(x: number, y: number, trip: string, stop: string, time: string, color: string = ""): void {
+    public drawStopCircle(_x: number, _y: number, _trip: string, _stop: string, _time: string, _color: string = ""): void {
         // This method should be overridden in subclasses to draw the stop circle
         throw ('drawStopCircle method not implemented');
     }

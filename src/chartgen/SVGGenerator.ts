@@ -1,5 +1,5 @@
-import {Trip} from "./interfaces";
-import {StringChartGenerator} from "./StringChartGenerator";
+import {Trip} from "../interfaces.ts";
+import {StringChartGenerator} from "./StringChartGenerator.ts";
 
 export class SVGGenerator extends StringChartGenerator {
     private readonly svg: SVGSVGElement;
@@ -30,7 +30,7 @@ export class SVGGenerator extends StringChartGenerator {
         return value.toFixed(4);
     }
 
-    public override drawStopCircle(x: number, y: number, trip: string, stop: string, time: string, color: string = "black"): void {
+    public override drawStopCircle(x: number, y: number, _trip: string, _stop: string, _time: string, color: string = "black"): void {
         const circle = document.createElementNS(this.svgNS, 'circle');
         circle.setAttribute('cx', this.toString(x));
         circle.setAttribute('cy', this.toString(y));
