@@ -47,19 +47,21 @@ export class CanvasGenerator extends StringChartGenerator {
         return this.eventHandlers;
     }
 
-    public override drawStopCircle(x: number, y: number, trip: string, stop: string, time: string): void {
+    public override drawStopCircle(x: number, y: number, trip: string, stop: string, time: string, color: string = "black"): void {
         this.context.beginPath();
         this.context.arc(x, y, this.radius, 0, 2 * Math.PI, false);
         this.context.lineWidth = 1;
+        this.context.strokeStyle = color;
         this.context.stroke();
         this.createMouseOverStopInfo(x, y, trip, stop, time);
     }
 
-    public override drawLine(startX: number, startY: number, endX: number, endY: number) {
+    public override drawLine(startX: number, startY: number, endX: number, endY: number, color: string = "black") {
         this.context.beginPath();
         this.context.moveTo(startX, startY);
         this.context.lineTo(endX, endY);
         this.context.closePath();
+        this.context.strokeStyle = color;
         this.context.stroke();
     }
 

@@ -24,23 +24,23 @@ export class SVGGenerator extends StringChartGenerator {
     }
 
 
-    public override drawStopCircle(x: number, y: number, trip: string, stop: string, time: string): void {
+    public override drawStopCircle(x: number, y: number, trip: string, stop: string, time: string, color: string = "black"): void {
         const circle = document.createElementNS(this.svgNS, 'circle');
         circle.setAttribute('cx', x.toString());
         circle.setAttribute('cy', y.toString());
         circle.setAttribute('r', this.radius.toString());
         circle.setAttribute('fill', 'none');
-        circle.setAttribute('stroke', 'black');
+        circle.setAttribute('stroke', color);
         this.svg.appendChild(circle);
     }
 
-    public override drawLine(startX: number, startY: number, endX: number, endY: number) {
+    public override drawLine(startX: number, startY: number, endX: number, endY: number, color: string = "black") {
         let line = document.createElementNS(this.svgNS, 'line');
         line.setAttribute('x1', startX.toString());
         line.setAttribute('y1', startY.toString());
         line.setAttribute('x2', endX.toString());
         line.setAttribute('y2', endY.toString());
-        line.setAttribute('stroke', this.stroke);
+        line.setAttribute('stroke', color);
         this.svg.appendChild(line);
     }
 

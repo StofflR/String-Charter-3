@@ -12,6 +12,7 @@ export interface Trip {
     stops: StopTime[];
     routeId: string;
     stations: string[];
+    traintype: string;
 }
 
 export interface Route {

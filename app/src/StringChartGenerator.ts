@@ -139,6 +139,17 @@ export class StringChartGenerator {
 
         for (const trip of this.data) {
             let datat: StopTime[] = trip.stops;
+            let color: string = "black";
+
+            if (['RJ', 'RJX'].includes(trip.traintype))
+                color = '#ca2e35';
+            if (['IC', 'ICE', 'EC', 'NJ'].includes(trip.traintype))
+                color = '#e8002a';
+            if (['R', "REX", "CJX"].includes(trip.traintype))
+                color = '#0060aa';
+            if (['S'].includes(trip.traintype))
+                color = '#0097d9';
+
             for (let i = 0; i < datat.length - 1; i++) {   //draw one trip
                 const currentConnection = datat[i];
                 const nextConnection = datat[i + 1];
@@ -162,21 +173,21 @@ export class StringChartGenerator {
 
                 }
 
-                this.drawLine(startX, startY, endX, endY)
+                this.drawLine(startX, startY, endX, endY, color);
                 if (i == 0) {
-                    this.drawStopCircle(startX, startY, trip.name, currentConnection.station, currentConnection.time);
+                    this.drawStopCircle(startX, startY, trip.name, currentConnection.station, currentConnection.time, color);
                 }
-                this.drawStopCircle(endX, endY, trip.name, nextConnection.station, nextConnection.time);
+                this.drawStopCircle(endX, endY, trip.name, nextConnection.station, nextConnection.time, color);
             }
         }
     }
 
-    public drawLine(startX: number, startY: number, endX: number, endY: number): void {
+    public drawLine(startX: number, startY: number, endX: number, endY: number, color: string = ""): void {
         // This method should be overridden in subclasses to draw the line
         throw ('drawLine method not implemented');
     }
 
-    public drawStopCircle(x: number, y: number, trip: string, stop: string, time: string): void {
+    public drawStopCircle(x: number, y: number, trip: string, stop: string, time: string, color: string = ""): void {
         // This method should be overridden in subclasses to draw the stop circle
         throw ('drawStopCircle method not implemented');
     }

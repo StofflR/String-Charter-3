@@ -56,7 +56,7 @@ function parseRouteData(csvText: string, stopTimesCsvText: string, stopsCsvText:
     if (!tripsByRouteId[routeId]) {
       tripsByRouteId[routeId] = [];
     }
-    if (!existingTripIds.has(row.trip_id)) {
+    if (row.trip_id && !existingTripIds.has(row.trip_id)) {
       existingTripIds.add(row.trip_id);
       tripsByRouteId[routeId].push({
         id: row.trip_id,
@@ -64,6 +64,7 @@ function parseRouteData(csvText: string, stopTimesCsvText: string, stopsCsvText:
         stops: [],
         routeId: row.routeId,
         stations: [],
+        traintype: row.trip_short_name.split(" ")[0],
       });
     }
 
