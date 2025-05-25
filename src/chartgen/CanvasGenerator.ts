@@ -10,8 +10,8 @@ export class CanvasGenerator extends StringChartGenerator {
     constructor(canvas: HTMLCanvasElement, data: Trip[] = [], axisFlip: boolean) {
         super(data, axisFlip);
         this.canvas = canvas;
-        this.canvas.width += this.getOffsetX() + this.getOffsetY();
-        this.canvas.height += this.getOffsetX() + this.getOffsetY();
+        this.canvas.width = this.getDynamicWidth() + this.getOffsetX() + this.getOffsetY();
+        this.canvas.height = this.getDynamicHeight() + this.getOffsetX() + this.getOffsetY();
         this.context = this.canvas.getContext('2d') as CanvasRenderingContext2D;
         if (!this.stopDetailElement) {
             this.stopDetailElement = document.createElement('stop-detail');
@@ -26,18 +26,6 @@ export class CanvasGenerator extends StringChartGenerator {
         return this.canvas.width - (this.getOffsetX() + this.getOffsetY());
     }
 
-    public getCanvas(): HTMLCanvasElement {
-        return this.canvas;
-    }
-
-    public getContext(): CanvasRenderingContext2D {
-        return this.context;
-    }
-
-    public clearCanvas(): void {
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
-
     public resetEventHandlers(): void {
         for (let eventHandler of this.eventHandlers) {
             this.canvas.removeEventListener('mousemove', eventHandler);
@@ -45,11 +33,7 @@ export class CanvasGenerator extends StringChartGenerator {
         this.eventHandlers = [];
     }
 
-    public getEventHandlers() {
-        return this.eventHandlers;
-    }
-
-    public override drawStopCircle(x: number, y: number, trip: string, stop: string, time: string, color: string = "black"): void {
+    protected override drawStopCircle(x: number, y: number, trip: string, stop: string, time: string, color: string = "black"): void {
         this.context.beginPath();
         this.context.arc(x, y, this.radius, 0, 2 * Math.PI, false);
         this.context.lineWidth = 1;
@@ -58,7 +42,7 @@ export class CanvasGenerator extends StringChartGenerator {
         this.createMouseOverStopInfo(x, y, trip, stop, time);
     }
 
-    public override drawLine(startX: number, startY: number, endX: number, endY: number, color: string = "black") {
+    protected override drawLine(startX: number, startY: number, endX: number, endY: number, color: string = "black") {
         this.context.beginPath();
         this.context.moveTo(startX, startY);
         this.context.lineTo(endX, endY);
@@ -67,25 +51,19 @@ export class CanvasGenerator extends StringChartGenerator {
         this.context.stroke();
     }
 
-    public override drawData() {
+    protected override drawData() {
         this.context.strokeStyle = 'black';
         super.drawData();
     }
 
-    public override drawBackgroundLine(_startX: number, _startY: number, _endX: number, _endY: number) {
-        this.context.fillStyle = 'black';
-        this.context.strokeStyle = `rgb(200, 200, 200)`;
-        this.drawLine(_startX, _startY, _endX, _endY);
-    }
-
-    public override drawLabels() {
+    protected override drawLabels() {
         this.context.font = '12px Arial';
         this.context.fillStyle = 'black';
         this.context.strokeStyle = `black`;
         super.drawLabels();
     }
 
-    public override drawDiagonalText(x: number, y: number, stationName: string) {
+    protected override drawDiagonalText(x: number, y: number, stationName: string) {
         this.context.translate(x, y);
         this.context.textAlign = 'left';
         this.context.rotate(-Math.PI / 4); // Rotate the text by -45 degrees (or any desired angle)
@@ -94,12 +72,12 @@ export class CanvasGenerator extends StringChartGenerator {
         this.context.translate(-x, -y);
     }
 
-    public override drawText(text: string, x: number, y: number, alignment: CanvasTextAlign = 'center'): void {
+    protected override drawText(text: string, x: number, y: number, alignment: CanvasTextAlign = 'center'): void {
         this.context.textAlign = alignment;
         this.context.fillText(text, x, y);
     }
 
-    public createMouseOverStopInfo(posX: number, posY: number, trip: string, stop: string, time: string): void {
+    private createMouseOverStopInfo(posX: number, posY: number, trip: string, stop: string, time: string): void {
         // let windowVisible = false;
         const relativeX = posX / this.canvas.width;
         const relativeY = posY / this.canvas.height;
@@ -113,10 +91,10 @@ export class CanvasGenerator extends StringChartGenerator {
             const relativeMouseY = mouseY / rect.height;
 
             // Calculate the distance between the mouse coordinates and the center of the arc
-            const distance = Math.sqrt(Math.pow(relativeMouseX - relativeX, 2) * this.canvas.width + Math.pow(relativeMouseY - relativeY, 2) * this.canvas.height);
+            const distance = Math.sqrt(Math.pow(relativeMouseX - relativeX, 2) + Math.pow(relativeMouseY - relativeY, 2)) * ( this.canvas.width + this.canvas.height ) / 2;
 
             // Check if the distance is within the arc radius
-            if (distance <= this.radius && this.stopDetailElement) {
+            if (distance <= 2*this.radius && this.stopDetailElement) {
                 this.stopDetailElement.textContent = trip + ' stopping at: ' + stop + ', time: ' + time;
             }
         };

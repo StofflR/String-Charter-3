@@ -26,7 +26,26 @@ export class StringChartGenerator {
         });
     }
 
-    public getOffsetX(): number {
+    protected getDynamicWidth(){
+        if(this.axisFlip){
+            const timeDiff = this.data.maxTime - this.data.minTime;
+            return timeDiff / 60 * 100;
+        }else {
+            return this.allStations.length * 150;
+        }
+
+    }
+
+    protected getDynamicHeight(){
+        if(!this.axisFlip){
+            const timeDiff = this.data.maxTime - this.data.minTime;
+            return timeDiff / 60 * 100;
+        }else {
+            return this.allStations.length * 150;
+        }
+    }
+
+    protected getOffsetX(): number {
         if (this.axisFlip) {
             return 240;
         } else {
@@ -34,7 +53,7 @@ export class StringChartGenerator {
         }
     }
 
-    public getOffsetY(): number {
+    protected getOffsetY(): number {
         if (this.axisFlip) {
             return 80;
         } else {
@@ -42,13 +61,13 @@ export class StringChartGenerator {
         }
     }
 
-    public drawLabels() {
+    protected drawLabels() {
         this.drawXLabels();
         this.drawYLabels();
     }
 
-    public drawBackgroundLine(_startX: number, _startY: number, _endX: number, _endY: number): void {
-        throw ("drawBackgroundLine method not implemented");
+    private drawBackgroundLine(_startX: number, _startY: number, _endX: number, _endY: number): void {
+        this.drawLine(_startX, _startY, _endX, _endY, 'lightgray');
     }
 
     private getRelX(connection: RelativeStop) {
@@ -59,7 +78,7 @@ export class StringChartGenerator {
         return this.axisFlip ? connection.distance : connection.time;
     }
 
-    public drawData(): void {
+    protected drawData(): void {
         this.drawLine(this.getOffsetX() - 40, this.getOffsetY() - 20, this.getOffsetX() + 40 + this.getWidth(), this.getOffsetY() - 20);
         this.drawLine(this.getOffsetX() - 20, this.getOffsetY() - 40, this.getOffsetX() - 20, this.getHeight() + 20 + this.getOffsetY());
         for (const trip of this.data.relative_trips) {
@@ -94,12 +113,12 @@ export class StringChartGenerator {
         }
     }
 
-    public drawLine(_startX: number, _startY: number, _endX: number, _endY: number, _color: string = ""): void {
+    protected drawLine(_startX: number, _startY: number, _endX: number, _endY: number, _color: string = ""): void {
         // This method should be overridden in subclasses to draw the line
         throw ('drawLine method not implemented');
     }
 
-    public drawStopCircle(_x: number, _y: number, _trip: string, _stop: string, _time: string, _color: string = ""): void {
+    protected drawStopCircle(_x: number, _y: number, _trip: string, _stop: string, _time: string, _color: string = ""): void {
         // This method should be overridden in subclasses to draw the stop circle
         throw ('drawStopCircle method not implemented');
     }
@@ -119,15 +138,15 @@ export class StringChartGenerator {
         this.drawData();
     }
 
-    public drawText(_text: string, _x: number, _y: number, _alignment = ""): void {
+    protected drawText(_text: string, _x: number, _y: number, _alignment = ""): void {
         throw ('drawText method not implemented');
     }
 
-    public drawDiagonalText(_x: number, _y: number, _stationName: string) {
+    protected drawDiagonalText(_x: number, _y: number, _stationName: string) {
         throw ('drawDiagonalText method not implemented');
     }
 
-    public drawXLabels() {
+    private drawXLabels() {
 
         if (this.axisFlip) {
             // time
@@ -157,7 +176,7 @@ export class StringChartGenerator {
         }
     }
 
-    public drawYLabels() {
+    private drawYLabels() {
         if (this.axisFlip) {
             // stations
             for (let i = 0; i < this.allStations.length; i++) {

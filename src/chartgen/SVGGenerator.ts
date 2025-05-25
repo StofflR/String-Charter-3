@@ -13,8 +13,8 @@ export class SVGGenerator extends StringChartGenerator {
     constructor(svg: SVGSVGElement, data: Trip[], axisFlip: boolean) {
         super(data, axisFlip);
         this.svg = svg;
-        this.width = 1900 + this.getOffsetX() + this.getOffsetY();
-        this.height = 1080 + this.getOffsetX() + this.getOffsetY();
+        this.width = this.getDynamicWidth() + this.getOffsetX() + this.getOffsetY();
+        this.height = this.getDynamicHeight() + this.getOffsetX() + this.getOffsetY();
         svg.setAttribute('viewBox', "0 0 " + this.width + " " + this.height);
     }
 
@@ -30,7 +30,7 @@ export class SVGGenerator extends StringChartGenerator {
         return value.toFixed(4);
     }
 
-    public override drawStopCircle(x: number, y: number, _trip: string, _stop: string, _time: string, color: string = "black"): void {
+    protected override drawStopCircle(x: number, y: number, _trip: string, _stop: string, _time: string, color: string = "black"): void {
         const circle = document.createElementNS(this.svgNS, 'circle');
         circle.setAttribute('cx', this.toString(x));
         circle.setAttribute('cy', this.toString(y));
@@ -41,7 +41,7 @@ export class SVGGenerator extends StringChartGenerator {
         this.svg.appendChild(circle);
     }
 
-    public override drawLine(startX: number, startY: number, endX: number, endY: number, color: string = "black") {
+    protected override drawLine(startX: number, startY: number, endX: number, endY: number, color: string = "black") {
         let line = document.createElementNS(this.svgNS, 'line');
         line.setAttribute('x1', this.toString(startX));
         line.setAttribute('y1', this.toString(startY));
@@ -52,12 +52,12 @@ export class SVGGenerator extends StringChartGenerator {
         this.svg.appendChild(line);
     }
 
-    public override drawData() {
+    protected override drawData() {
         this.stroke = 'black';
         super.drawData();
     }
 
-    public override drawDiagonalText(x: number, y: number, stationName: string) {
+    protected override drawDiagonalText(x: number, y: number, stationName: string) {
         const textElement = document.createElementNS(this.svgNS, 'text');
         textElement.setAttribute('x', this.toString(x));
         textElement.setAttribute('y', this.toString(y + this.getOffsetY()));
@@ -69,7 +69,7 @@ export class SVGGenerator extends StringChartGenerator {
         this.svg.appendChild(textElement);
     }
 
-    public override drawText(text: string, x: number, y: number, alignment: string = 'middle'): void {
+    protected override drawText(text: string, x: number, y: number, alignment: string = 'middle'): void {
         const textElement = document.createElementNS(this.svgNS, 'text');
         textElement.setAttribute('x', this.toString(x));
         textElement.setAttribute('y', this.toString(y));
