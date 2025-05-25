@@ -9,17 +9,32 @@ let loadedRoutes: RouteD[] = [];
 
 const routeNames = ref([]);
 const fileNameLabel = ref("Drag & drop a GTFS zip file here, or <span class='text-blue-600 underline'>click to select</span>");
-const route_selected = ref('')
+const routes_selected = ref([])
 const flip_axis = ref(false);
 
-async function routeSelect(e: Event) {
-  const selectedRoute = loadedRoutes.find((route) => route.name === route_selected.value);
-  trips = selectedRoute?.trips as Trip[];
+async function routeUpdate() {
+  trips = [];
+
+  for (let i = 0; i < routes_selected.value.length; i++) {
+    const route = loadedRoutes.find((route) => route.name === routes_selected.value[i]);
+    
+    for (let j = 0; j < route?.trips.length; j++) {
+      trips.push(route?.trips[j]);
+    }
+   }
 
   if(trips)
     generateStringGraph(trips, flip_axis.value);
 }
 
+function toggleSelection(route: string) {
+  let index = routes_selected.value.indexOf(route);
+  if(index === -1)
+    routes_selected.value.push(route);
+  else
+    routes_selected.value.splice(index, 1);
+  routeUpdate();
+}
 
 function handleUploadButton(e: Event) {
   const inputElement = e.target as HTMLInputElement;
@@ -156,13 +171,14 @@ const filteredRoutes = computed(() => {
 
       <label for="route-select" class="mt-6">Select a route:</label>
       <div>
-        <select @change="routeSelect" v-model="route_selected" size="10" id="route-select"
+        <div id="route-select"
           class="block w-full appearance-none bg-white border border-gray-300 text-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
           <!-- <option disabled selected value> -- select a route -- </option> -->
-          <option v-for="option in filteredRoutes" :key="option" :value="option" 
+          <div @click="toggleSelection(option)" :class="{ 'bg-gray-200': routes_selected.includes(option) }"
+          v-for="option in filteredRoutes" :key="option" :value="option" 
           class="py-3 px-4 "
-          > {{ option }} </option>
-        </select>
+          > {{ option }} </div>
+        </div>
       </div>
 
       <div class="flex items-center justify-center mt-4 mx-2" id="flip-axis">
