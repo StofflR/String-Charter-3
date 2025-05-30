@@ -3,7 +3,7 @@ import {Trip} from "../interfaces.ts";
 import {StringChartGenerator} from "./StringChartGenerator.ts";
 
 export class D3Generator extends StringChartGenerator {
-    private readonly svg : d3.Selection<SVGSVGElement, undefined, null, undefined>;
+    public readonly svg : d3.Selection<SVGSVGElement, undefined, null, undefined>;
     private readonly container;
     readonly width: number;
     readonly height: number;
@@ -18,7 +18,7 @@ export class D3Generator extends StringChartGenerator {
         return this.width - (this.getOffsetX() + this.getOffsetY());
     }
 
-    constructor(data: Trip[], axisFlip: boolean) {
+    constructor(data: Trip[], axisFlip: boolean, offsetX: number, offsetY: number, viewBoxX: number, viewBoxY: number) {
         super(data, axisFlip);
         this.width = this.getDynamicWidth() + this.getOffsetX() + this.getOffsetY();
         this.height = this.getDynamicHeight() + this.getOffsetX() + this.getOffsetY();
@@ -27,19 +27,14 @@ export class D3Generator extends StringChartGenerator {
         if (!this.container) {
             throw new Error('Container element with id "graphCanvas" not found.');
         }
-        // clear previous content
         this.container.innerHTML = '';
-
-        // create svg element
         this.svg = d3.create('svg');
         if (!this.svg || !this.svg.node()) {
             throw new Error('SVG element not found.');
         }
-        // set tailwind w-full
-        this.svg.attr('class', 'flex w-full');
-        // set viewBox
-        this.svg.attr('viewBox', `100 0 ${this.format(this.getDynamicWidth() + this.getOffsetX() + this.getOffsetY())} ${this.format(this.getDynamicHeight() + this.getOffsetX() + this.getOffsetY())}`)
-
+        this.svg.attr('class', 'flex w-full h-full');
+        this.svg.attr('id', 'svgGraph');
+        this.svg.attr('viewBox', `${offsetX} ${offsetY} ${viewBoxX} ${viewBoxY}`);
         this.container.append(this.svg.node()!);
     }
 
@@ -165,5 +160,10 @@ export class D3Generator extends StringChartGenerator {
         for (const circle of this.stopCirlces) {
             this._drawStopCircle(circle.x, circle.y, circle.trip, circle.stop, circle.time, circle.color);
         }
+    }
+
+    regenerate(offsetX: number, offsetY: number, viewBoxX: number, viewBoxY: number) {
+        this.svg.attr('viewBox', `${offsetX} ${offsetY} ${viewBoxX} ${viewBoxY}`);
+
     }
 }

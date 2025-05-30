@@ -15,7 +15,7 @@ export class StringChartGenerator {
 
     }
 
-    protected getDynamicWidth(){
+    getDynamicWidth(){
         if(this.axisFlip){
             const timeDiff = this.data.maxTime - this.data.minTime;
             return timeDiff / 60 * 100;
@@ -25,7 +25,7 @@ export class StringChartGenerator {
 
     }
 
-    protected getDynamicHeight(){
+    getDynamicHeight(){
         if(!this.axisFlip){
             const timeDiff = this.data.maxTime - this.data.minTime;
             return timeDiff / 60 * 100;
@@ -34,7 +34,7 @@ export class StringChartGenerator {
         }
     }
 
-    protected getOffsetX(): number {
+    public getOffsetX(): number {
         if (this.axisFlip) {
             return 240;
         } else {
@@ -42,7 +42,7 @@ export class StringChartGenerator {
         }
     }
 
-    protected getOffsetY(): number {
+    public getOffsetY(): number {
         if (this.axisFlip) {
             return 80;
         } else {

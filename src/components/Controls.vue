@@ -5,6 +5,7 @@ import {loadGTFSData, getStations} from '../load_gtfs_data';
 import {generateStringGraph} from '../string_graph';
 
 import obbData from "../assets/datasets/GTFS_OP_2025_obb.zip";
+import SliderControls from "@/components/SliderControls.vue";
 
 let obbDataFile: File | null = null;
 
@@ -180,6 +181,9 @@ const filteredRoutes = computed(() => {
           Load Example OBB Data
         </button>
       </div>
+
+      <SliderControls/>
+
       <label for="route-filter" class="mt-6">Filter routes:</label>
       <input id="rout-filter" v-model="routeFilter"
              class="block w-full appearance-none bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">

@@ -3,8 +3,7 @@ import SliderControls from "./SliderControls.vue";
 </script>
 
 <template>
-  <div id="string-graph-card" class="w-full">
-    <SliderControls/>
-    <div id="graphCanvas" class="flex"></div>
+  <div id="string-graph-card" class="flex w-full h-full">
+    <div id="graphCanvas" class="flex w-full h-full"></div>
   </div>
 </template>
