@@ -175,7 +175,7 @@ const filteredRoutes = computed(() => {
 
 
 <template>
-  <div id="container">
+  <div id="container" class="height-100vh overflow-scroll">
     <div id="controls">
       <h1 class="mb-4">String Charter 3</h1>
       <label for="drop-area" class="mt-8">Select a GTFS zip</label>
