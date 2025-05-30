@@ -8,17 +8,19 @@ import {ComparisonTrips} from "./ComparisonTrips";
 export class StringChartGenerator {
     readonly data: RelativeTrips;
     readonly axisFlip: boolean = false;
+    readonly comparison: boolean = false;
     readonly radius: number = 5;
 
     constructor(data: Trip[] = [], axisFlip: boolean = false, comparison: boolean = false) {
         this.data = comparison ? new ComparisonTrips(data) : new RelativeTrips(data);
         this.axisFlip = axisFlip;
+        this.comparison = comparison;
     }
 
     getDynamicWidth() {
         if (this.axisFlip) {
             const timeDiff = this.data.maxTime - this.data.minTime;
-            return timeDiff / 60 * 100;
+            return timeDiff / 60 * (this.comparison ? 300 : 100);
         } else {
             return this.data.allStations.length * 150;
         }
@@ -28,7 +30,7 @@ export class StringChartGenerator {
     getDynamicHeight() {
         if (!this.axisFlip) {
             const timeDiff = this.data.maxTime - this.data.minTime;
-            return timeDiff / 60 * 100;
+            return timeDiff / 60 * (this.comparison ? 300 : 100);
         } else {
             return this.data.allStations.length * 150;
         }
