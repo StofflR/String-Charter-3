@@ -18,8 +18,8 @@ export class D3Generator extends StringChartGenerator {
         return this.width - (this.getOffsetX() + this.getOffsetY());
     }
 
-    constructor(data: Trip[], axisFlip: boolean, offsetX: number, offsetY: number, viewBoxX: number, viewBoxY: number) {
-        super(data, axisFlip);
+    constructor(data: Trip[], axisFlip: boolean, compare: boolean, offsetX: number, offsetY: number, viewBoxX: number, viewBoxY: number) {
+        super(data, axisFlip, compare);
         this.width = this.getDynamicWidth() + this.getOffsetX() + this.getOffsetY();
         this.height = this.getDynamicHeight() + this.getOffsetX() + this.getOffsetY();
 
@@ -39,14 +39,10 @@ export class D3Generator extends StringChartGenerator {
     }
 
     protected override drawLine(_startX: number, _startY: number, _endX: number, _endY: number, _color: string = "black") {
-        this.svg.append('line')
-            .attr('x1', this.format(_startX))
-            .attr('y1', this.format(_startY))
-            .attr('x2', this.format(_endX))
-            .attr('y2', this.format(_endY))
-            .attr('stroke-width', 2)
-            .attr('shape-rendering', "geometricPrecision")
-            .attr('stroke', _color);
+        this.svg.append('path')
+            .attr('stroke-width', 3)
+            .attr('stroke', _color)
+            .attr('d', `M ${this.format(_startX)} ${this.format(_startY)} L ${this.format(_endX)} ${this.format(_endY)}`);
     }
 
     protected override drawText(_text: string, _x: number, _y: number, _alignment?: string): void {

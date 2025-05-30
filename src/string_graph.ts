@@ -27,10 +27,10 @@ export function updateViewBox(scale: number, offset: number): void {
     d3Gen.updateViewBox(offsetX, offsetY, viewBoxX, viewBoxY);
 }
 
-export function generateStringGraph(data: Trip[], axisFlip: boolean): void {
+export function generateStringGraph(data: Trip[], axisFlip: boolean, compare: boolean): void {
     if(!offsetX || !offsetY || !viewBoxX || !viewBoxY)
         updateViewBox(100, 0);
 
-    d3Gen = new D3Generator(data, !axisFlip, offsetX!, offsetY!, viewBoxX!, viewBoxY!);
+    d3Gen = new D3Generator(data, !axisFlip, compare, offsetX!, offsetY!, viewBoxX!, viewBoxY!);
     d3Gen.generate();
 }

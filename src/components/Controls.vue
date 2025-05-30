@@ -16,30 +16,32 @@ const routeNames = ref([]);
 const fileNameLabel = ref("Drag & drop a GTFS zip file here, or <span class='text-blue-600 underline'>click to select</span>");
 const routes_selected = ref([])
 const flip_axis = ref(false);
+const compare = ref(false);
 
 fetch(obbData)
     .then(res => res.blob()) // Gets the response and returns it as a blob
     .then(blob => {
       obbDataFile = new File([blob], "GTFS_OP_2025_obb.zip", {type: "application/zip"});
     });
+
 async function routeUpdate() {
   trips = [];
 
   for (let i = 0; i < routes_selected.value.length; i++) {
     const route = loadedRoutes.find((route) => route.name === routes_selected.value[i]);
-    
+
     for (let j = 0; j < route?.trips.length; j++) {
       trips.push(route?.trips[j]);
     }
-   }
+  }
 
-  if(trips)
-    generateStringGraph(trips, flip_axis.value);
+  if (trips)
+    generateStringGraph(trips, flip_axis.value, compare.value);
 }
 
 function toggleSelection(route: string) {
   let index = routes_selected.value.indexOf(route);
-  if(index === -1)
+  if (index === -1)
     routes_selected.value.push(route);
   else
     routes_selected.value.splice(index, 1);
@@ -96,7 +98,7 @@ async function handleGtfsUpload(file: File) {
     }
     loadedRoutes = routes;
 
-    if(routeNames.value.length > 0)
+    if (routeNames.value.length > 0)
       toggleSelection(routeNames.value[0]); // Automatically select the first route
   }
 }
@@ -148,12 +150,11 @@ let routeFilter = ref('');
 let showOnlySelected = ref(false);
 
 const filteredRoutes = computed(() => {
-  if (showOnlySelected.value){
+  if (showOnlySelected.value) {
     return routes_selected.value;
-  }
-  else {
-    return routeNames.value.filter(option => 
-      option.toLowerCase().includes(routeFilter.value.toLocaleLowerCase())
+  } else {
+    return routeNames.value.filter(option =>
+        option.toLowerCase().includes(routeFilter.value.toLocaleLowerCase())
     )
   }
 });
@@ -189,16 +190,17 @@ const filteredRoutes = computed(() => {
              class="block w-full appearance-none bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
 
       <label for="route-select" class="mt-6">Select a route:</label>
-      <input type="checkbox" v-model="showOnlySelected" />Show Selected
-      <a @click="clearRouteFilter()">Clear</a>  
+      <input type="checkbox" v-model="showOnlySelected"/>Show Selected
+      <a @click="clearRouteFilter()">Clear</a>
       <div>
         <div id="route-select"
-          class="h-100 overflow-scroll block w-full appearance-none bg-white border border-gray-300 text-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
+             class="h-100 overflow-scroll block w-full appearance-none bg-white border border-gray-300 text-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
           <!-- <option disabled selected value> -- select a route -- </option> -->
           <div @click="toggleSelection(option)" :class="{ 'bg-gray-200': routes_selected.includes(option) }"
-          v-for="option in filteredRoutes" :key="option" :value="option" 
-          class="py-3 px-4 "
-          > {{ option }} </div>
+               v-for="option in filteredRoutes" :key="option" :value="option"
+               class="py-3 px-4 "
+          > {{ option }}
+          </div>
         </div>
       </div>
 
@@ -206,12 +208,23 @@ const filteredRoutes = computed(() => {
         <label for="axis-switch" class="flex items-center cursor-pointer">
           <span class="mr-3 text-gray-700 font-medium">Flip Axis</span>
           <div class="relative">
-            <input id="axis-switch" type="checkbox" class="sr-only peer" @change="generateStringGraph(trips, flip_axis)"
+            <input id="axis-switch" type="checkbox" class="sr-only peer"
+                   @change="generateStringGraph(trips, flip_axis, compare)"
                    v-model="flip_axis">
             <div class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-blue-500 transition"></div>
             <div
-                class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow peer-checked:translate-x-5 transition">
-            </div>
+                class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow peer-checked:translate-x-5 transition"></div>
+          </div>
+        </label>
+        <label for="compare-switch" class="ml-6 flex items-center cursor-pointer">
+          <span class="mr-3 text-gray-700 font-medium">Flip Axis</span>
+          <div class="relative">
+            <input id="compare-switch" type="checkbox" class="sr-only peer"
+                   @change="generateStringGraph(trips, flip_axis, compare)"
+                   v-model="compare">
+            <div class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-blue-500 transition"></div>
+            <div
+                class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow peer-checked:translate-x-5 transition"></div>
           </div>
         </label>
       </div>
