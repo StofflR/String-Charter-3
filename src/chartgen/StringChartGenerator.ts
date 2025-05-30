@@ -3,33 +3,33 @@ import {
     splitLongStationName
 } from "../Utility";
 import {RelativeTrips} from "./RelativeTrips";
+import {ComparisonTrips} from "./ComparisonTrips";
 
 export class StringChartGenerator {
     readonly data: RelativeTrips;
     readonly axisFlip: boolean = false;
     readonly radius: number = 5;
 
-    constructor(data: Trip[] = [], axisFlip: boolean = false) {
-        this.data = new RelativeTrips(data);
+    constructor(data: Trip[] = [], axisFlip: boolean = false, comparison: boolean = false) {
+        this.data = comparison ? new ComparisonTrips(data) : new RelativeTrips(data);
         this.axisFlip = axisFlip;
-
     }
 
-    getDynamicWidth(){
-        if(this.axisFlip){
+    getDynamicWidth() {
+        if (this.axisFlip) {
             const timeDiff = this.data.maxTime - this.data.minTime;
             return timeDiff / 60 * 100;
-        }else {
+        } else {
             return this.data.allStations.length * 150;
         }
 
     }
 
-    getDynamicHeight(){
-        if(!this.axisFlip){
+    getDynamicHeight() {
+        if (!this.axisFlip) {
             const timeDiff = this.data.maxTime - this.data.minTime;
             return timeDiff / 60 * 100;
-        }else {
+        } else {
             return this.data.allStations.length * 150;
         }
     }

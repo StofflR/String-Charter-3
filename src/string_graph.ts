@@ -8,9 +8,6 @@ let offsetY : number | undefined = undefined;
 let viewBoxX : number | undefined = undefined;
 let viewBoxY : number | undefined = undefined;
 
-let trips : Trip[] = [];
-
-
 export function updateViewBox(scale: number, offset: number): void {
     if (!d3Gen) {
         console.log('SVG element not found.');
@@ -31,7 +28,6 @@ export function updateViewBox(scale: number, offset: number): void {
 }
 
 export function generateStringGraph(data: Trip[], axisFlip: boolean): void {
-    trips = data;
     if(!offsetX || !offsetY || !viewBoxX || !viewBoxY)
         updateViewBox(100, 0);
 
