@@ -1,5 +1,5 @@
-import {NormalizedTrip, RelativeStop, Trip} from "../interfaces";
-import {translateTimeToMinutes} from "../Utility";
+import {NormalizedTrip, Trip} from "../interfaces";
+import {getAllStations, translateTimeToMinutes} from "../Utility";
 
 export class RelativeTrips {
     public maxDistance: number = 0;
@@ -9,22 +9,25 @@ export class RelativeTrips {
 
     public relative_trips: NormalizedTrip[] = [];
 
+    public allStations: string[] = [];
+    public allStationDistances: Map<string, number> = new Map();
+
     private init(data: Trip[] = []) {
+        this.allStations = getAllStations(data);
         for (const trip of data) {
             for (const stop of trip.stops) {
-                if (stop.distance > this.maxDistance) {
-                    this.maxDistance = stop.distance;
+                if (!this.allStationDistances.has(stop.station)) {
+                    this.allStationDistances.set(stop.station, stop.distance);
+                } else {
+                    stop.distance = this.allStationDistances.get(stop.station)!;
                 }
-                if (stop.distance < this.minDistance) {
-                    this.minDistance = stop.distance;
-                }
+
+                this.maxDistance = Math.max(this.maxDistance, stop.distance);
+                this.minDistance = Math.min(this.minDistance, stop.distance);
+
                 const timeInMinutes = translateTimeToMinutes(stop.time);
-                if (timeInMinutes > this.maxTime) {
-                    this.maxTime = timeInMinutes;
-                }
-                if (timeInMinutes < this.minTime) {
-                    this.minTime = timeInMinutes;
-                }
+                this.maxTime = Math.max(this.maxTime, timeInMinutes);
+                this.minTime = Math.min(this.minTime, timeInMinutes);
             }
         }
 
@@ -32,22 +35,35 @@ export class RelativeTrips {
 
     constructor(data: Trip[] = []) {
         this.init(data);
+        this.ensureDistances();
         for (const trip of data) {
             const relativeTrip: NormalizedTrip = {
                 name: trip.name,
                 traintype: trip.traintype,
                 stops: []
             }
-            for (const stop of trip.stops) {
-                const relativeStop: RelativeStop = {
+            trip.stops.forEach(stop => {
+                relativeTrip.stops.push({
                     station: stop.station,
                     timeLabel: stop.time,
                     time: (translateTimeToMinutes(stop.time) - this.minTime) / (this.maxTime - this.minTime),
-                    distance: (stop.distance - this.minDistance) / (this.maxDistance - this.minDistance)
-                }
-                relativeTrip.stops.push(relativeStop);
-            }
+                    distance: this.allStationDistances.get(stop.station)!,
+                });
+            });
             this.relative_trips.push(relativeTrip);
+        }
+    }
+
+    private ensureDistances() {
+        if (this.maxDistance < this.minDistance || isNaN(this.maxDistance) || isNaN(this.minDistance)) {
+            this.allStations.forEach((station, index) => {
+                this.allStationDistances.set(station, index / this.allStations.length);
+            });
+        } else {
+            for (const [station, distance] of this.allStationDistances.entries()) {
+                const normalizedDistance = (distance - this.minDistance) / (this.maxDistance - this.minDistance);
+                this.allStationDistances.set(station, normalizedDistance);
+            }
         }
     }
 }

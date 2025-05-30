@@ -1,6 +1,5 @@
 import {RelativeStop, Trip} from "../interfaces";
 import {
-    getAllStations,
     splitLongStationName
 } from "../Utility";
 import {RelativeTrips} from "./RelativeTrips";
@@ -8,22 +7,12 @@ import {RelativeTrips} from "./RelativeTrips";
 export class StringChartGenerator {
     readonly data: RelativeTrips;
     readonly axisFlip: boolean = false;
-    readonly radius: number = 3;
-    readonly allStations: string[];
-    readonly allStationDistances: number[] = [];
+    readonly radius: number = 5;
 
     constructor(data: Trip[] = [], axisFlip: boolean = false) {
         this.data = new RelativeTrips(data);
         this.axisFlip = axisFlip;
-        this.allStations = getAllStations(data);
-        this.allStationDistances = this.allStations.map(station => {
-            const trip = data.find(t => t.stops.some(s => s.station === station));
-            if (trip) {
-                const stop = trip.stops.find(s => s.station === station);
-                return stop ? (stop.distance - this.data.minDistance) / (this.data.maxDistance - this.data.minDistance) : 0;
-            }
-            return 0;
-        });
+
     }
 
     protected getDynamicWidth(){
@@ -31,7 +20,7 @@ export class StringChartGenerator {
             const timeDiff = this.data.maxTime - this.data.minTime;
             return timeDiff / 60 * 100;
         }else {
-            return this.allStations.length * 150;
+            return this.data.allStations.length * 150;
         }
 
     }
@@ -41,7 +30,7 @@ export class StringChartGenerator {
             const timeDiff = this.data.maxTime - this.data.minTime;
             return timeDiff / 60 * 100;
         }else {
-            return this.allStations.length * 150;
+            return this.data.allStations.length * 150;
         }
     }
 
@@ -157,9 +146,9 @@ export class StringChartGenerator {
             }
         } else {
             // stations
-            for (let i = 0; i < this.allStations.length; i++) {
-                const stationName = this.allStations[i];
-                const xPosition = this.allStationDistances[i] * this.getWidth();
+            for (let i = 0; i < this.data.allStations.length; i++) {
+                const stationName = this.data.allStations[i];
+                const xPosition = this.data.allStationDistances.get(stationName)! * this.getWidth();
                 const yPosition = -this.getOffsetY() / 2;
                 this.drawBackgroundLine(xPosition + this.getOffsetX(), this.getOffsetY() - 20, xPosition + this.getOffsetX(), this.getHeight() + this.getOffsetY());
 
@@ -179,10 +168,10 @@ export class StringChartGenerator {
     private drawYLabels() {
         if (this.axisFlip) {
             // stations
-            for (let i = 0; i < this.allStations.length; i++) {
-                const stationName = this.allStations[i];
+            for (let i = 0; i < this.data.allStations.length; i++) {
+                const stationName = this.data.allStations[i];
                 const xPosition = this.getOffsetX() - 30;
-                const yPosition = this.allStationDistances[i] * this.getHeight() + this.getOffsetY();
+                const yPosition = this.data.allStationDistances.get(stationName)! * this.getHeight() + this.getOffsetY();
                 this.drawBackgroundLine(this.getOffsetX() - 20, yPosition, this.getOffsetX() + this.getWidth(), yPosition);
 
                 if (stationName.length > 50) {

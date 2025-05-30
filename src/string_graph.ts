@@ -1,26 +1,8 @@
 import {Trip} from "./interfaces";
-import {CanvasGenerator} from "./chartgen/CanvasGenerator.ts";
-import {SVGGenerator} from "./chartgen/SVGGenerator.ts";
+import {D3Generator} from "./chartgen/D3Generator.ts";
 
-let canvasGenerator: CanvasGenerator | null = null;
-
-
-export function generateSVG(data: Trip[], svg: SVGSVGElement, axisFlip: boolean) {
-    let svgGen = new SVGGenerator(svg, data, axisFlip);
-    svgGen.generate();
-}
 
 export function generateStringGraph(data: Trip[], axisFlip: boolean): void {
-    if (canvasGenerator)
-        canvasGenerator.resetEventHandlers();
-
-    const canvas = document.getElementById('graphCanvas') as HTMLCanvasElement;
-    canvas.width = 1900;
-    canvas.height = 1080;
-    if (!canvas) {
-        console.error('Canvas element not found.');
-        return;
-    }
-    canvasGenerator = new CanvasGenerator(canvas, data, axisFlip);
-    canvasGenerator.generate();
+    let d3Gen = new D3Generator(data, !axisFlip);
+    d3Gen.generate();
 }

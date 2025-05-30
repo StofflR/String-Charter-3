@@ -1,4 +1,4 @@
-import {Trip} from "./interfaces";
+import {NormalizedTrip, Trip} from "./interfaces";
 
 export function getAllStations(data: Trip[]): string[] {
     let allStations: string[] = [];
@@ -117,12 +117,22 @@ export function findMinTime(data: Trip[]): number {
 
 export function findMaxDistance(data: Trip[]): number {
     let maxDistance: number = 0;
-    for (const trip of data) {
-        for (const stop of trip.stops) {
-            if (!maxDistance || stop.distance > maxDistance) {
+    data.forEach(trip => {
+        trip.stops.forEach(stop => {
+            if (stop.distance > maxDistance) {
                 maxDistance = stop.distance;
             }
-        }
-    }
+        });
+    });
     return maxDistance;
+}
+
+export function relativeTripToXYArrays(trip: NormalizedTrip){
+    const x: number[] = [];
+    const y: number[] = [];
+    trip.stops.forEach(stop => {
+        x.push(stop.distance);
+        y.push(stop.time);
+    });
+    return {x, y};
 }

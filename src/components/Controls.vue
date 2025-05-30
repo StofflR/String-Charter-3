@@ -2,7 +2,7 @@
 import {computed, ref} from 'vue';
 import {Trip, RouteD} from '../interfaces';
 import {loadGTFSData, getStations} from '../load_gtfs_data';
-import {generateSVG, generateStringGraph} from '../string_graph';
+import {generateStringGraph} from '../string_graph';
 
 import obbData from "../assets/datasets/GTFS_OP_2025_obb.zip";
 
@@ -90,23 +90,13 @@ async function handleGtfsUpload(file: File) {
         if (!routeNames.value.includes(routeString)) {
           routeNames.value.push(routeString);
         }
-
         route.name = routeString;
-
-      }
-      loadedRoutes = routes;
-      
-      const selectedRoute = loadedRoutes.at(0);
-      if (selectedRoute && selectedRoute.trips.length < 20) {
-         generateStringGraph(selectedRoute.trips, flip_axis.value);
       }
     }
     loadedRoutes = routes;
 
-    const selectedRoute = loadedRoutes.at(0);
-    if (selectedRoute) {
-      generateStringGraph(selectedRoute.trips, flip_axis.value);
-    }
+    if(routeNames.value.length > 0)
+      toggleSelection(routeNames.value[0]); // Automatically select the first route
   }
 }
 
@@ -131,15 +121,11 @@ const onDrop = (event: DragEvent) => {
 
 
 function exportAsSVG() {
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  while (svg.firstChild) {
-    svg.firstChild.remove();
+  const svg = document.getElementById('graphCanvas') as SVGElement;
+  if (!svg) {
+    console.error('SVG element not found');
+    return;
   }
-  svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-  svg.setAttribute('font-family', 'Verdana');
-
-  generateSVG(trips, svg, flip_axis.value);
-
 
   const svgData = new XMLSerializer().serializeToString(svg);
   const blob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});

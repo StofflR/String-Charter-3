@@ -1,6 +1,10 @@
+<script setup lang="ts">
+import SliderControls from "./SliderControls.vue";
+</script>
+
 <template>
-  <div id="string-graph-card" class="max-w-3/4">
-    <div id="stop-detail" class="flex items-center mx-8"> --- hover over a stop to see details ---</div>
-    <canvas id="graphCanvas" class="flex w-full overflow-scroll"></canvas>
+  <div id="string-graph-card" class="w-full">
+    <SliderControls/>
+    <div id="graphCanvas" class="flex"></div>
   </div>
 </template>
