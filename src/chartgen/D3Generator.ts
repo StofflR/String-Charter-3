@@ -162,8 +162,7 @@ export class D3Generator extends StringChartGenerator {
         }
     }
 
-    regenerate(offsetX: number, offsetY: number, viewBoxX: number, viewBoxY: number) {
-        this.svg.attr('viewBox', `${offsetX} ${offsetY} ${viewBoxX} ${viewBoxY}`);
-
+    updateViewBox(offsetX: number, offsetY: number, viewBoxX: number, viewBoxY: number) {
+        this.svg.attr("viewBox", `${offsetX} ${offsetY} ${viewBoxX} ${viewBoxY}`);
     }
 }

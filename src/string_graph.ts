@@ -27,8 +27,7 @@ export function updateViewBox(scale: number, offset: number): void {
 
     viewBoxX = d3Gen.getOffsetX()+ d3Gen.getOffsetY() + scaledWidth
     viewBoxY = d3Gen.getOffsetY() + d3Gen.getOffsetX() + scaledHeight
-    d3Gen = new D3Generator(trips, d3Gen.axisFlip, offsetX!, offsetY!, viewBoxX!, viewBoxY!);
-    d3Gen.generate();
+    d3Gen.updateViewBox(offsetX, offsetY, viewBoxX, viewBoxY);
 }
 
 export function generateStringGraph(data: Trip[], axisFlip: boolean): void {
