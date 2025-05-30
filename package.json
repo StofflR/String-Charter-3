@@ -15,7 +15,6 @@
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-opener": "^2",
     "d3": "^7.9.0",
-    "gh-pages": "^6.3.0",
     "jszip": "^3.10.1",
     "papaparse": "^5.4.1",
     "vue": "^3.5.14"
@@ -28,6 +27,7 @@
     "@vitejs/plugin-vue": "^5.2.4",
     "concurrently": "^9.1.2",
     "del": "^8.0.0",
+    "gh-pages": "^6.3.0",
     "gulp": "^5.0.0",
     "tailwindcss": "^4.1.6",
     "typescript": "~5.6.2",
