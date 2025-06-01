@@ -1,30 +1,33 @@
-<script setup lang="ts">
-import {computed, ref} from 'vue';
-import {Trip, RouteD} from '../interfaces';
-import {loadGTFSData, getStations} from '../load_gtfs_data';
-import {generateStringGraph} from '../string_graph';
+<script lang="ts">
+import {getStations, loadGTFSData} from "@/load_gtfs_data.ts";
+import {RouteD, Trip} from "@/interfaces.ts";
+import {computed, ref} from "vue";
+import {generateStringGraph} from "@/string_graph.ts";
 
-import obbData from "../assets/datasets/GTFS_OP_2025_obb.zip";
-import SliderControls from "@/components/SliderControls.vue";
+export default {
+  name: 'Controls',
+}
 
-let obbDataFile: File | null = null;
-
-let trips: Trip[];
+let trips: Trip[] = [];
 let loadedRoutes: RouteD[] = [];
 
-const routeNames = ref([]);
-const fileNameLabel = ref("Drag & drop a GTFS zip file here, or <span class='text-blue-600 underline'>click to select</span>");
+let flip_axis = false;
+let compare = false;
+
+
+let routeNames = ref([]);
 const routes_selected = ref([])
-const flip_axis = ref(false);
-const compare = ref(false);
 
-fetch(obbData)
-    .then(res => res.blob()) // Gets the response and returns it as a blob
-    .then(blob => {
-      obbDataFile = new File([blob], "GTFS_OP_2025_obb.zip", {type: "application/zip"});
-    });
+export function toggleSelection(route: string) {
+  let index = routes_selected.value.indexOf(route);
+  if (index === -1)
+    routes_selected.value.push(route);
+  else
+    routes_selected.value.splice(index, 1);
+  routeUpdate();
+}
 
-async function routeUpdate() {
+export async function routeUpdate() {
   trips = [];
 
   for (let i = 0; i < routes_selected.value.length; i++) {
@@ -36,37 +39,32 @@ async function routeUpdate() {
   }
 
   if (trips)
-    generateStringGraph(trips, flip_axis.value, compare.value);
+    generateStringGraph(trips, flip_axis, compare);
 }
 
-function toggleSelection(route: string) {
-  let index = routes_selected.value.indexOf(route);
-  if (index === -1)
-    routes_selected.value.push(route);
-  else
-    routes_selected.value.splice(index, 1);
-  routeUpdate();
-}
-
-function clearRouteFilter() {
+export function clearRouteFilter() {
   routes_selected.value = [];
   routeFilter.value = "";
   showOnlySelected.value = false;
   routeUpdate();
 }
 
-function handleUploadButton(e: Event) {
-  const inputElement = e.target as HTMLInputElement;
+let routeFilter = ref('');
+let showOnlySelected = ref(false);
 
-  if (inputElement && inputElement.files && inputElement.files.length > 0)
-    handleGtfsUpload(inputElement.files[0]);
-}
+const filteredRoutes = computed(() => {
+  if (showOnlySelected.value) {
+    return routes_selected.value;
+  } else {
+    return routeNames.value.filter(option =>
+        option.toLowerCase().includes(routeFilter.value.toLocaleLowerCase())
+    )
+  }
+});
 
-async function handleGtfsUpload(file: File) {
-  console.log(file);
-  fileNameLabel.value = `Selected file: ${file.name}`;
+
+export async function handleGtfsUpload(file: File) {
   routeNames.value = []
-
   if (file) {
 
     const routes = await loadGTFSData(file);
@@ -103,61 +101,21 @@ async function handleGtfsUpload(file: File) {
   }
 }
 
+</script>
 
-const fileInput = ref<HTMLInputElement | null>(null);
-const isDragging = ref(false);
 
-const onDragOver = () => {
-  isDragging.value = true;
+<script setup lang="ts">
+import SliderControls from "@/components/SliderControls.vue";
+import ExportButton from "@/components/ExportButton.vue";
+import ControlSwitches from "@/components/ControlSwitches.vue";
+import DragDropArea from "@/components/DragDropArea.vue";
+import RouteSelect from "@/components/RouteSelect.vue";
+
+
+function handleToggle(event: { flip_axis: boolean, compare: boolean }) {
+  flip_axis = event.flip_axis;
+  compare = event.compare;
 }
-
-const onDragLeave = () => {
-  isDragging.value = false;
-}
-
-const onDrop = (event: DragEvent) => {
-  isDragging.value = false;
-  const files = event.dataTransfer?.files
-  if (files && files.length > 0)
-    handleGtfsUpload(files[0]);
-}
-
-
-function exportAsSVG() {
-  const svg = document.getElementById('graphCanvas') as SVGElement;
-  if (!svg) {
-    console.error('SVG element not found');
-    return;
-  }
-
-  const svgData = new XMLSerializer().serializeToString(svg);
-  const blob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
-  const url = URL.createObjectURL(blob);
-
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = 'graph.svg';
-  link.style.display = 'none';
-  document.body.appendChild(link);
-
-  link.click();
-
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-}
-
-let routeFilter = ref('');
-let showOnlySelected = ref(false);
-
-const filteredRoutes = computed(() => {
-  if (showOnlySelected.value) {
-    return routes_selected.value;
-  } else {
-    return routeNames.value.filter(option =>
-        option.toLowerCase().includes(routeFilter.value.toLocaleLowerCase())
-    )
-  }
-});
 
 </script>
 
@@ -167,22 +125,7 @@ const filteredRoutes = computed(() => {
     <div id="controls">
       <h1 class="mb-4">String Charter 3</h1>
       <label for="drop-area" class="mt-8">Select a GTFS zip</label>
-      <div @dragover.prevent="onDragOver" @dragleave.prevent="onDragLeave" @drop.prevent="onDrop"
-           :class="{ 'bg-gray-200': isDragging }" id="drop-area" @click="fileInput?.click()"
-           class="border-2 border-dashed border-gray-400 rounded-lg p-8 text-center cursor-pointer transition hover:bg-gray-100 ">
-        <p v-html="fileNameLabel"></p>
-        <input ref="fileInput" @change="handleUploadButton" type="file" id="file-input" accept=".zip" class="hidden"/>
-      </div>
-
-      <div class="mt-2 text-gray-700" id="file-name-label"></div>
-
-      <div class="flex items-center justify-center mt-4 mb-4 mx-2">
-        <button id="exampleData" @click="handleGtfsUpload(obbDataFile)"
-                class="mt-6 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold rounded-full shadow-md transition transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
-          Load Example OBB Data
-        </button>
-      </div>
-
+      <DragDropArea/>
       <SliderControls/>
 
       <label for="route-filter" class="mt-6">Filter routes:</label>
@@ -204,37 +147,8 @@ const filteredRoutes = computed(() => {
         </div>
       </div>
 
-      <div class="flex items-center justify-center mt-4 mx-2" id="flip-axis">
-        <label for="axis-switch" class="flex items-center cursor-pointer">
-          <span class="mr-3 text-gray-700 font-medium">Flip Axis</span>
-          <div class="relative">
-            <input id="axis-switch" type="checkbox" class="sr-only peer"
-                   @change="generateStringGraph(trips, flip_axis, compare)"
-                   v-model="flip_axis">
-            <div class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-blue-500 transition"></div>
-            <div
-                class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow peer-checked:translate-x-5 transition"></div>
-          </div>
-        </label>
-        <label for="compare-switch" class="ml-6 flex items-center cursor-pointer">
-          <span class="mr-3 text-gray-700 font-medium">Flip Axis</span>
-          <div class="relative">
-            <input id="compare-switch" type="checkbox" class="sr-only peer"
-                   @change="generateStringGraph(trips, flip_axis, compare)"
-                   v-model="compare">
-            <div class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-blue-500 transition"></div>
-            <div
-                class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow peer-checked:translate-x-5 transition"></div>
-          </div>
-        </label>
-      </div>
-      <div class="flex items-center justify-center mt-4 mx-2">
-        <button id="exportButton" @click="exportAsSVG"
-                class="mt-6 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold rounded-full shadow-md transition transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
-          Export
-          as SVG
-        </button>
-      </div>
+      <ControlSwitches @update="handleToggle" :trips="trips"/>
+      <ExportButton/>
     </div>
   </div>
 </template>
