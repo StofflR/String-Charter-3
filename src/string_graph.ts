@@ -10,8 +10,7 @@ let viewBoxY : number | undefined = undefined;
 
 export function updateViewBox(scale: number, offset: number): void {
     if (!d3Gen) {
-        console.log('SVG element not found.');
-        return;
+        d3Gen = new D3Generator([], true, false, 0, 0, 0, 0);
     }
     let scaledWidth = d3Gen.getWidth() * (d3Gen.axisFlip ? 1 : scale / 100 );
     let scaledHeight = d3Gen.getHeight() * (d3Gen.axisFlip ? scale / 100 : 1);
