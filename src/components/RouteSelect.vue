@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import {appInstance} from "@/AppSettings.ts";
+import SliderControls from "@/components/SliderControls.vue";
+import ControlSwitches from "@/components/ControlSwitches.vue";
+import ExportButton from "@/components/ExportButton.vue";
 
 let routeFilter = appInstance.routeFilter;
 let showOnlySelected = appInstance.showOnlySelected;
@@ -9,6 +12,8 @@ let selectedRoutes = appInstance.routesSelected;
 
 
 <template>
+  <ControlSwitches/>
+  <SliderControls/>
   <label for="route-filter" class="mt-6">Filter routes:</label>
   <input id="rout-filter" v-model="routeFilter"
          class="block w-full appearance-none bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
@@ -25,5 +30,6 @@ let selectedRoutes = appInstance.routesSelected;
       </div>
     </div>
   </div>
+  <ExportButton/>
 </template>
 

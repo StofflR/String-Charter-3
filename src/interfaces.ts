@@ -34,5 +34,6 @@ export interface Route {
 export interface RouteD {
     id: string;
     name: string;
+    shortname: string;
     trips: Trip[];
 }

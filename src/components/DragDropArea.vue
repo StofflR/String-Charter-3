@@ -1,37 +1,31 @@
 <template>
-  <label for="drop-area" class="mt-8">Select a GTFS zip</label>
+  <label for="drop-area" class="text-1xl font-extrabold bg-clip-text drop-shadow-lg mb-4">Select or Upload data</label>
   <div @dragover.prevent="onDragOver" @dragleave.prevent="onDragLeave" @drop.prevent="onDrop"
        :class="{ 'bg-gray-200': isDragging }" id="drop-area" @click="fileInput?.click()"
        class="border-2 border-dashed border-gray-400 rounded-lg p-8 text-center cursor-pointer transition hover:bg-gray-100 ">
     <p v-html="fileNameLabel"></p>
     <input ref="fileInput" @change="handleUploadButton" type="file" id="file-input" accept=".zip" class="hidden"/>
   </div>
-  <div class="mt-2 text-gray-700" id="file-name-label"></div>
-  <div class="flex items-center justify-center mt-4 mb-4 mx-2">
-    <button id="exampleData" @click="appInstance.handleGtfsUpload(obbDataFile)"
-            class="mt-6 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold rounded-full shadow-md transition transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
-      Load Example OBB Data
+  <label for="drop-area" class="text-1xl font-extrabold bg-clip-text drop-shadow-lg mb-4">Available data sets:</label>
+  <div v-for="dataFile in dataFiles" class="flex items-left justify-left mt-4 mb-4 mx-2">
+    <button @click="appInstance.handleGtfsUpload(dataFile.data)"
+            class="px-6 py-3 bg-gradient-to-r w-full from-blue-500 to-blue-700 text-white font-semibold rounded-full shadow-md transition transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+      Load {{dataFile.name}}
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
-import obbData from "../assets/datasets/GTFS_OP_2025_obb.zip";
 import {ref} from "vue";
-import {appInstance} from "@/AppSettings.ts";
+import {appInstance} from "../AppSettings.ts";
 
 const fileInput = ref<HTMLInputElement | null>(null);
 const fileNameLabel = ref("Drag & drop a GTFS zip file here, or <span class='text-blue-600 underline'>click to select</span>");
 const isDragging = ref(false);
+const dataFiles = appInstance.dataFiles;
+import obbData from '../assets/datasets/GTFS_OP_2025_obb.zip';
 
-let obbDataFile: File | null = null;
-
-fetch(obbData)
-    .then(res => res.blob()) // Gets the response and returns it as a blob
-    .then(blob => {
-      obbDataFile = new File([blob], "GTFS_OP_2025_obb.zip", {type: "application/zip"});
-    });
-
+appInstance.fetchDataFile("OBB 2025 GTFS", obbData);
 function handleUploadButton(e: Event) {
   const inputElement = e.target as HTMLInputElement;
   if (inputElement && inputElement.files && inputElement.files.length > 0)
@@ -50,7 +44,6 @@ const onDrop = (event: DragEvent) => {
   isDragging.value = false;
   const files = event.dataTransfer?.files
   if (files && files.length > 0) {
-    fileNameLabel.value = "Selected file: " + files[0].name;
     appInstance.handleGtfsUpload(files[0]);
   }
 }
