@@ -1,42 +1,45 @@
 import {computed, ref} from "vue";
 import {generateStringGraph} from "./string_graph.ts";
 import {getStations, loadGTFSData} from "./load_gtfs_data.ts";
-import obbData from "./assets/datasets/GTFS_OP_2025_obb.zip";
+import {RouteD, Trip} from "./interfaces.ts";
 
-let instance;
+let instance: App | null = null;
 
 export class App {
-    public trips = ref([]);
-    public loadedRoutes = ref([]);
+    public trips = ref<Trip[]>([]);
+    public loadedRoutes = ref<RouteD[]>([]);
     public flipAxis = ref(false);
     public compare = ref(false);
-    public routeNames = ref([]);
-    public routesSelected = ref([])
+    public routeNames = ref<string[]>([]);
+    public routesSelected = ref<string[]>([])
     public routeFilter = ref('');
     public showOnlySelected = ref(false);
-    public availableRoutes = computed(() => {
+    public availableRoutes = computed<string[]>(() => {
         const routes = !this.showOnlySelected.value ? this.routeNames.value : this.routesSelected.value;
         return routes.filter((route: string) => route.includes(this.routeFilter.value))
     });
-    public dataFiles = ref([]);
+    public dataFiles = ref<any[]>([]);
 
     constructor() {
         if (instance) {
             throw new Error("New instance cannot be created!!");
         }
-        this.fetchDataFile("ÖBB 2025", obbData);
         instance = this;
     }
 
-    private fetchDataFile(fileName: string, data) {
+    fetchDataFile(fileName: string, data: any) {
+        if (this.dataFiles.value.find((dataFile) => {
+            return dataFile.name === fileName;
+        })) return;
+        
         fetch(data)
             .then(res => res.blob()) // Gets the response and returns it as a blob
             .then(blob => {
-                this.dataFiles.value.push({
-                    "name": fileName,
-                    "data": new File([blob], fileName, {type: "application/zip"})
-                });
-            }
+                    this.dataFiles.value.push({
+                        "name": fileName,
+                        "data": new File([blob], fileName, {type: "application/zip"})
+                    });
+                }
             );
     }
 
@@ -54,9 +57,10 @@ export class App {
 
         for (let i = 0; i < this.routesSelected.value.length; i++) {
             const route = this.loadedRoutes.value.find((route) => route.name === this.routesSelected.value[i]);
-
-            for (let j = 0; j < route?.trips.length; j++) {
-                this.trips.value.push(route?.trips[j]);
+            if (route) {
+                for (let j = 0; j < route?.trips.length; j++) {
+                    this.trips.value.push(route?.trips[j]);
+                }
             }
         }
 
@@ -121,7 +125,7 @@ export class App {
     }
 
     exportAsSVG() {
-        const svg = document.getElementById('graphCanvas') as SVGElement;
+        const svg = document.getElementById('graphCanvas');
         if (!svg) {
             console.error('SVG element not found');
             return;
