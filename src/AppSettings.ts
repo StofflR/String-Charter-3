@@ -1,6 +1,7 @@
 import {computed, ref} from "vue";
 import {generateStringGraph} from "./string_graph.ts";
 import {getStations, loadGTFSData} from "./load_gtfs_data.ts";
+import obbData from "./assets/datasets/GTFS_OP_2025_obb.zip";
 
 let instance;
 
@@ -16,15 +17,27 @@ export class App {
     public availableRoutes = computed(() => {
         const routes = !this.showOnlySelected.value ? this.routeNames.value : this.routesSelected.value;
         return routes.filter((route: string) => route.includes(this.routeFilter.value))
-    })
+    });
+    public dataFiles = ref([]);
 
     constructor() {
         if (instance) {
             throw new Error("New instance cannot be created!!");
         }
-
+        this.fetchDataFile("ÖBB 2025", obbData);
         instance = this;
+    }
 
+    private fetchDataFile(fileName: string, data) {
+        fetch(data)
+            .then(res => res.blob()) // Gets the response and returns it as a blob
+            .then(blob => {
+                this.dataFiles.value.push({
+                    "name": fileName,
+                    "data": new File([blob], fileName, {type: "application/zip"})
+                });
+            }
+            );
     }
 
     toggleSelection(route: string) {
@@ -61,6 +74,14 @@ export class App {
 
 
     async handleGtfsUpload(file: File) {
+        if (!this.dataFiles.value.find((dataFile) => {
+            return dataFile.data == file;
+        })) {
+            this.dataFiles.value.push({
+                "name": file.name,
+                "data": file
+            })
+        }
         this.routeNames.value = []
         if (file) {
 

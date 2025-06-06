@@ -4,20 +4,57 @@ import ExportButton from "@/components/ExportButton.vue";
 import ControlSwitches from "@/components/ControlSwitches.vue";
 import DragDropArea from "@/components/DragDropArea.vue";
 import RouteSelect from "./RouteSelect.vue";
+import uploadIcon from "../assets/icons/upload_file_24dp.svg";
+import trainIcon from "../assets/icons/train_24dp.svg";
+import menuIcon from "../assets/icons/menu_24dp.svg";
+import {ref} from "vue";
 
+let expandView = ref(true);
+let currentComponent = ref("DragDropArea");
+let sideMenuComponents = [
+  {
+    "name": "Menu",
+    "component": null,
+    "icon": menuIcon
+  },
+  {
+    "name": 'Upload File',
+    "component": "DragDropArea",
+    "icon": uploadIcon
+  },
+  {
+    "name":
+        'Select Route',
+    "component":
+        "RouteSelect",
+    "icon":
+    trainIcon
+  }
+]
+
+function swapComponent(component: string | null) {
+  if (!component) {
+    expandView.value = !expandView.value;
+    return;
+  }
+  expandView.value = true;
+  currentComponent.value = component;
+}
 </script>
 
 
 <template>
-  <div id="container">
-    <div id="controls">
-      <h1 class="mb-4">String Charter 3</h1>
-      <label for="drop-area" class="mt-8">Select a GTFS zip</label>
-      <DragDropArea/>
-      <SliderControls/>
-      <RouteSelect/>
-      <ControlSwitches/>
-      <ExportButton/>
+  <div class="items-top w-max-2/10 h-full">
+    <span v-for="item in sideMenuComponents">
+      <button class="items-center rounded-md w-12 h-12"
+            @click="swapComponent(item.component)">
+        <img :src="item.icon" alt="" class="w-full h-full scale-300">
+      </button>
+    </span>
+    <div class="w-max-2/20">
+    <DragDropArea v-if="currentComponent == 'DragDropArea' && expandView"/>
+    <RouteSelect v-if="currentComponent == 'RouteSelect' && expandView"/>
     </div>
   </div>
+
 </template>
