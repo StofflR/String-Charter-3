@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import SliderControls from "@/components/SliderControls.vue";
-import ExportButton from "@/components/ExportButton.vue";
-import ControlSwitches from "@/components/ControlSwitches.vue";
+import VisualSettings from "@/components/VisualSettings.vue";
 import DragDropArea from "@/components/DragDropArea.vue";
 import RouteSelect from "./RouteSelect.vue";
 import uploadIcon from "../assets/icons/upload_file_24dp.svg";
 import trainIcon from "../assets/icons/train_24dp.svg";
 import menuIcon from "../assets/icons/menu_24dp.svg";
+import settingIcon from "../assets/icons/display_settings_24dp.svg";
 import {ref} from "vue";
 
 let expandView = ref(true);
@@ -29,6 +28,10 @@ let sideMenuComponents = [
         "RouteSelect",
     "icon":
     trainIcon
+  }, {
+  "name" : "Visual Settings",
+    "component": "VisualSettings",
+    "icon" : settingIcon
   }
 ]
 
@@ -54,6 +57,7 @@ function swapComponent(component: string | null) {
     <div class="w-max-2/20">
     <DragDropArea v-if="currentComponent == 'DragDropArea' && expandView"/>
     <RouteSelect v-if="currentComponent == 'RouteSelect' && expandView"/>
+    <VisualSettings v-if="currentComponent == 'VisualSettings' && expandView"/>
     </div>
   </div>
 
