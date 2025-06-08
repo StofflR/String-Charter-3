@@ -1,11 +1,25 @@
-import {computed, ref} from "vue";
-import {generateStringGraph} from "./string_graph.ts";
-import {getStations, loadGTFSData} from "./load_gtfs_data.ts";
-import {RouteD, Trip} from "./interfaces.ts";
+import { computed, ref } from "vue";
+import { getStations, loadGTFSData } from "./load_gtfs_data.ts";
+import { RouteD, Trip } from "./interfaces.ts";
+import { D3Generator } from "./chartgen/D3Generator.ts";
 
 let instance: App | null = null;
 
 export class App {
+    public d3Gen: D3Generator = new D3Generator([], true, false, 0);
+
+    public offsetX: number = 0;
+    public offsetY: number = 0;
+    public viewBoxX: number = 0;
+    public viewBoxY: number = 0;
+
+    public scale = ref(100);
+    public offset = ref(0);
+
+    public sanitized = ref(false);
+    public geographicScale = ref(100);
+    public diagonalTilt = ref(-45);
+
     public trips = ref<Trip[]>([]);
     public loadedRoutes = ref<RouteD[]>([]);
     public flipAxis = ref(false);
@@ -31,15 +45,15 @@ export class App {
         if (this.dataFiles.value.find((dataFile) => {
             return dataFile.name === fileName;
         })) return;
-        
+
         fetch(data)
             .then(res => res.blob()) // Gets the response and returns it as a blob
             .then(blob => {
-                    this.dataFiles.value.push({
-                        "name": fileName,
-                        "data": new File([blob], fileName, {type: "application/zip"})
-                    });
-                }
+                this.dataFiles.value.push({
+                    "name": fileName,
+                    "data": new File([blob], fileName, { type: "application/zip" })
+                });
+            }
             );
     }
 
@@ -65,7 +79,7 @@ export class App {
         }
 
         if (this.trips.value)
-            generateStringGraph(this.trips.value, this.flipAxis.value, this.compare.value);
+            this.generateStringGraph();
     }
 
 
@@ -132,7 +146,7 @@ export class App {
         }
 
         const svgData = new XMLSerializer().serializeToString(svg);
-        const blob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+        const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
         const url = URL.createObjectURL(blob);
 
         const link = document.createElement('a');
@@ -146,7 +160,29 @@ export class App {
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
     }
+
+
+    updateViewBox(scale: number, offset: number): void {
+        let scaledWidth = this.d3Gen.getWidth() * (!this.flipAxis.value ? 1 : scale / 100);
+        let scaledHeight = this.d3Gen.getHeight() * (!this.flipAxis.value ? scale / 100 : 1);
+
+        let maxOffsetX = this.d3Gen.getWidth() - scaledWidth;
+        let maxOffsetY = this.d3Gen.getHeight() - scaledHeight;
+
+        this.offsetX = maxOffsetX * (offset / 100);
+        this.offsetY = maxOffsetY * (offset / 100);
+
+        this.viewBoxX = this.d3Gen.getOffsetX() + this.d3Gen.getOffsetY() + scaledWidth
+        this.viewBoxY = this.d3Gen.getOffsetY() + this.d3Gen.getOffsetX() + scaledHeight
+        this.d3Gen.updateViewBox(this.offsetX, this.offsetY, this.viewBoxX, this.viewBoxY);
+    }
+
+    generateStringGraph(): void {
+        this.d3Gen = new D3Generator(this.trips.value, !this.flipAxis.value, this.compare.value, this.diagonalTilt.value, this.geographicScale.value, this.sanitized.value);
+        this.updateViewBox(this.scale.value, this.offset.value);
+        this.d3Gen.generate();
+    }
 }
 
-export const appInstance = Object.freeze(new App());
+export const appInstance = new App(); //TODO freezeze this instance
 
