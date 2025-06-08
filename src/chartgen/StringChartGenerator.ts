@@ -1,19 +1,22 @@
-import {RelativeStop, Trip} from "../interfaces";
+import { RelativeStop, Trip } from "../interfaces";
 import {
     splitLongStationName
 } from "../Utility";
-import {RelativeTrips} from "./RelativeTrips";
-import {ComparisonTrips} from "./ComparisonTrips";
+import { RelativeTrips } from "./RelativeTrips";
+import { ComparisonTrips } from "./ComparisonTrips";
 
 export class StringChartGenerator {
-    readonly data: RelativeTrips;
-    readonly axisFlip: boolean = false;
-    readonly comparison: boolean = false;
-    readonly radius: number = 5;
 
-    constructor(data: Trip[] = [], axisFlip: boolean = false, comparison: boolean = false) {
+    protected data: RelativeTrips;
+    protected axisFlip: boolean = false;
+    protected comparison: boolean = false;
+    private cleanNames: boolean = false;
+    protected radius: number = 5;
+
+    constructor(data: Trip[] = [], axisFlip: boolean = false, comparison: boolean = false, cleanNames: boolean = false) {
         this.data = comparison ? new ComparisonTrips(data) : new RelativeTrips(data);
         this.axisFlip = axisFlip;
+        this.cleanNames = cleanNames;
         this.comparison = comparison;
     }
 
@@ -104,6 +107,16 @@ export class StringChartGenerator {
         }
     }
 
+    private sanitizeStationName(stationName: string): string {
+        if (this.cleanNames) {
+            stationName = stationName.replace(/ [0-9]+[a-z]*(-?[a-z]+)*$/, "");
+            stationName = stationName.replace("Bahnhof", "Bf");
+            stationName = stationName.replace("Hauptbahnhof", "Hbf");
+            stationName = stationName.replace("Haltestelle", "Hst");
+        }
+        return stationName;
+    }
+
     protected drawLine(_startX: number, _startY: number, _endX: number, _endY: number, _color: string = ""): void {
         // This method should be overridden in subclasses to draw the line
         throw ('drawLine method not implemented');
@@ -149,11 +162,11 @@ export class StringChartGenerator {
         } else {
             // stations
             for (let i = 0; i < this.data.allStations.length; i++) {
-                const stationName = this.data.allStations[i];
+                let stationName = this.data.allStations[i];
                 const xPosition = this.data.allStationDistances.get(stationName)! * this.getWidth();
                 const yPosition = -this.getOffsetY() / 2;
                 this.drawBackgroundLine(xPosition + this.getOffsetX(), this.getOffsetY() - 20, xPosition + this.getOffsetX(), this.getHeight() + this.getOffsetY());
-
+                stationName = this.sanitizeStationName(stationName);
                 if (stationName.length > 20) {
                     const splitIndex = splitLongStationName(stationName);
                     const firstPart = stationName.slice(0, splitIndex);
@@ -171,11 +184,11 @@ export class StringChartGenerator {
         if (this.axisFlip) {
             // stations
             for (let i = 0; i < this.data.allStations.length; i++) {
-                const stationName = this.data.allStations[i];
+                let stationName = this.data.allStations[i];
                 const xPosition = this.getOffsetX() - 30;
                 const yPosition = this.data.allStationDistances.get(stationName)! * this.getHeight() + this.getOffsetY();
                 this.drawBackgroundLine(this.getOffsetX() - 20, yPosition, this.getOffsetX() + this.getWidth(), yPosition);
-
+                stationName = this.sanitizeStationName(stationName);
                 if (stationName.length > 50) {
                     const splitIndex = splitLongStationName(stationName);
                     const firstPart = stationName.slice(0, splitIndex);

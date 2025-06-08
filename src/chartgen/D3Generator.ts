@@ -1,44 +1,54 @@
 import * as d3 from "d3";
-import {Trip} from "../interfaces.ts";
-import {StringChartGenerator} from "./StringChartGenerator.ts";
+import { Trip } from "../interfaces.ts";
+import { StringChartGenerator } from "./StringChartGenerator.ts";
 
 export class D3Generator extends StringChartGenerator {
-    public readonly svg : d3.Selection<SVGSVGElement, undefined, null, undefined>;
-    private readonly container;
-    readonly width: number;
-    readonly height: number;
-    private stopCirlces: { x: number, y: number, trip: string, stop: string, time: string, color: string }[] = [];
-    readonly format = d3.format(".2f");
+    public svg: d3.Selection<SVGSVGElement, undefined, null, undefined> | undefined;
+    protected container;
+    protected width: number;
+    protected height: number;
+    protected geographicScale: number;
+    protected diagonalTilt: number;
+    protected stopCirlces: { x: number, y: number, trip: string, stop: string, time: string, color: string }[] = [];
+    protected format = d3.format(".2f");
 
     public getHeight(): number {
-        return this.height - (this.getOffsetX() + this.getOffsetY());
+        let scale = this.axisFlip ? this.geographicScale / 100 : 1;
+        return this.height * scale - (this.getOffsetX() + this.getOffsetY());
     }
 
     public getWidth(): number {
-        return this.width - (this.getOffsetX() + this.getOffsetY());
+        let scale = !this.axisFlip ? this.geographicScale / 100 : 1;
+        return this.width * scale - (this.getOffsetX() + this.getOffsetY());
     }
 
-    constructor(data: Trip[], axisFlip: boolean, compare: boolean, offsetX: number, offsetY: number, viewBoxX: number, viewBoxY: number) {
-        super(data, axisFlip, compare);
+    constructor(data: Trip[], axisFlip: boolean, compare: boolean, diagonalTilt: number = -45, geographicScale: number = 100, sanitize: boolean = true) {
+        super(data, axisFlip, compare, sanitize);
+        this.geographicScale = geographicScale;
         this.width = this.getDynamicWidth() + this.getOffsetX() + this.getOffsetY();
         this.height = this.getDynamicHeight() + this.getOffsetX() + this.getOffsetY();
-
+        this.diagonalTilt = diagonalTilt;
         this.container = document.getElementById("graphCanvas") as HTMLDivElement;
         if (!this.container) {
-            throw new Error('Container element with id "graphCanvas" not found.');
+            console.error('Container with id "graphCanvas" not found.');
+            return;
         }
         this.container.innerHTML = '';
         this.svg = d3.create('svg');
         if (!this.svg || !this.svg.node()) {
-            throw new Error('SVG element not found.');
+            console.error('Failed to create SVG element.');
+            return;
         }
         this.svg.attr('class', 'flex w-full h-full');
         this.svg.attr('id', 'svgGraph');
-        this.svg.attr('viewBox', `${offsetX} ${offsetY} ${viewBoxX} ${viewBoxY}`);
         this.container.append(this.svg.node()!);
     }
 
     protected override drawLine(_startX: number, _startY: number, _endX: number, _endY: number, _color: string = "black") {
+        if (!this.svg) {
+            console.error('SVG element not initialized.');
+            return;
+        }
         this.svg.append('path')
             .attr('stroke-width', 3)
             .attr('stroke', _color)
@@ -46,6 +56,10 @@ export class D3Generator extends StringChartGenerator {
     }
 
     protected override drawText(_text: string, _x: number, _y: number, _alignment?: string): void {
+        if (!this.svg) {
+            console.error('SVG element not initialized.');
+            return;
+        }
         this.svg.append('text')
             .attr('x', this.format(_x))
             .attr('y', this.format(_y))
@@ -69,6 +83,10 @@ export class D3Generator extends StringChartGenerator {
     }
 
     private _drawStopCircle(_x: number, _y: number, _trip: string, _stop: string, _time: string, _color: string = "black"): void {
+        if (!this.svg) {
+            console.error('SVG element not initialized.');
+            return;
+        }
         this.svg.append('circle')
             .attr('cx', this.format(_x))
             .attr('cy', this.format(_y))
@@ -89,6 +107,10 @@ export class D3Generator extends StringChartGenerator {
                     _stop.length * 10,
                     _time.length * 10
                 ));
+                if (!this.svg) {
+                    console.error('SVG element not initialized.');
+                    return;
+                }
                 //add tooltip as rectangle to svg
                 this.svg.append('rect')
                     .attr('id', 'tooltip')
@@ -141,13 +163,17 @@ export class D3Generator extends StringChartGenerator {
     }
 
     protected override drawDiagonalText(_x: number, _y: number, _stationName: string): void {
+        if (!this.svg) {
+            console.error('SVG element not initialized.');
+            return;
+        }
         this.svg.append('text')
             .attr('x', this.format(_x))
             .attr('y', this.format(_y + this.getOffsetY()))
             .attr('font-size', '12px')
             .attr('fill', 'black')
             .attr('text-anchor', 'start')
-            .attr('transform', `rotate(-45 ${this.format(_x)},${this.format(_y + this.getOffsetY())})`)
+            .attr('transform', `rotate(${this.diagonalTilt.toString()} ${this.format(_x)},${this.format(_y + this.getOffsetY())})`)
             .text(_stationName);
     }
 
@@ -159,6 +185,10 @@ export class D3Generator extends StringChartGenerator {
     }
 
     updateViewBox(offsetX: number, offsetY: number, viewBoxX: number, viewBoxY: number) {
+        if (!this.svg) {
+            console.error('SVG element not initialized.');
+            return;
+        }
         this.svg.attr("viewBox", `${offsetX} ${offsetY} ${viewBoxX} ${viewBoxY}`);
     }
 }

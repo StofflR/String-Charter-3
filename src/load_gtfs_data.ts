@@ -46,11 +46,6 @@ function parseRouteData(csvText: string, stopTimesCsvText: string, stopsCsvText:
         if (["bahn", "bus", "sev", "g23", "zugang", "vorplatz"].includes(stationName.toLowerCase()))
             return;
 
-        stationName = stationName.replace(/ [0-9]+[a-z]*(-?[a-z]+)*$/, "");
-        stationName = stationName.replace("Bahnhof", "Bf");
-        stationName = stationName.replace("Hauptbahnhof", "Hbf");
-        stationName = stationName.replace("Haltestelle", "Hst");
-
         stopsById[cropped_stop_id] = stationName;
     });
 
