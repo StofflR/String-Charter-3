@@ -25,7 +25,7 @@ let diagonalTilt = appInstance.diagonalTilt;
 
   <div class="flex items-center gap-2">
     <label for="distance-scale-slider" class="text-sm">Scale geographic distance:</label>
-    <input type="range" id="distance-scale-slide" min="0" max="200" v-model="geographicScale" @change="appInstance.generateStringGraph()" class="slider w-full">
+    <input type="range" id="distance-scale-slide" min="30" max="200" v-model="geographicScale" @change="appInstance.generateStringGraph()" class="slider w-full">
   </div>
   <div class="flex items-center gap-2">
     <label for="x-tilt-slider" class="text-sm">Tilt x label:</label>

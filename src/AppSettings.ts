@@ -138,30 +138,6 @@ export class App {
         }
     }
 
-    exportAsSVG() {
-        const svg = document.getElementById('graphCanvas');
-        if (!svg) {
-            console.error('SVG element not found');
-            return;
-        }
-
-        const svgData = new XMLSerializer().serializeToString(svg);
-        const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'graph.svg';
-        link.style.display = 'none';
-        document.body.appendChild(link);
-
-        link.click();
-
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-    }
-
-
     updateViewBox(scale: number, offset: number): void {
         let scaledWidth = this.d3Gen.getWidth() * (!this.flipAxis.value ? 1 : scale / 100);
         let scaledHeight = this.d3Gen.getHeight() * (!this.flipAxis.value ? scale / 100 : 1);

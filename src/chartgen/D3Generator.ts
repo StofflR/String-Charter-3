@@ -4,7 +4,7 @@ import { StringChartGenerator } from "./StringChartGenerator.ts";
 
 export class D3Generator extends StringChartGenerator {
     public svg: d3.Selection<SVGSVGElement, undefined, null, undefined> | undefined;
-    protected container;
+    public container;
     protected width: number;
     protected height: number;
     protected geographicScale: number;
@@ -20,6 +20,28 @@ export class D3Generator extends StringChartGenerator {
     public getWidth(): number {
         let scale = !this.axisFlip ? this.geographicScale / 100 : 1;
         return this.width * scale - (this.getOffsetX() + this.getOffsetY());
+    }
+
+    public exportAsSVG() {
+        if (!this.container) {
+            console.error('SVG element not found');
+            return;
+        }
+
+        const svgData = new XMLSerializer().serializeToString(this.container);
+        const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'graph.svg';
+        link.style.display = 'none';
+        document.body.appendChild(link);
+
+        link.click();
+
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
     }
 
     constructor(data: Trip[], axisFlip: boolean, compare: boolean, diagonalTilt: number = -45, geographicScale: number = 100, sanitize: boolean = true) {
