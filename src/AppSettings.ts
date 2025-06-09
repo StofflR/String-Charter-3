@@ -6,7 +6,7 @@ import { D3Generator } from "./chartgen/D3Generator.ts";
 let instance: App | null = null;
 
 export class App {
-    public d3Gen: D3Generator = new D3Generator([], true, false, 0);
+    public d3Gen: D3Generator | null = null;
 
     public offsetX: number = 0;
     public offsetY: number = 0;
@@ -139,6 +139,10 @@ export class App {
     }
 
     updateViewBox(scale: number, offset: number): void {
+        if (!this.d3Gen) {
+            console.error('D3Generator instance is not initialized.');
+            return;
+        }
         let scaledWidth = this.d3Gen.getWidth() * (!this.flipAxis.value ? 1 : scale / 100);
         let scaledHeight = this.d3Gen.getHeight() * (!this.flipAxis.value ? scale / 100 : 1);
 

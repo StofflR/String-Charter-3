@@ -23,7 +23,7 @@ export default defineConfig(async () => ({
             '@': path.resolve(__dirname, './src'), // allows `@/` imports
         },
     },
-    assetsInclude: ["**/*.zip"],
+    assetsInclude: ["**/*.zip", "**/*.svg", "**/*.ico"],
     server: {
         port: 1420,
         strictPort: true,
@@ -40,7 +40,7 @@ export default defineConfig(async () => ({
             ignored: ["**/src-tauri/**"],
         },
         envPrefix: ["VITE_", "TAURI_"],
-        assetsInclude: ["**/*.zip"],
+        assetsInclude: ["**/*.zip", "**/*.svg", "**/*.ico"],
         plugins: [
             tailwindcss(),
             vue()
