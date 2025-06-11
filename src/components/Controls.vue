@@ -45,12 +45,14 @@ function swapComponent(component: string | null) {
   <div class="flex items-top h-full">
     <div class="p-2 flex flex-col gap-2 h-full">
       <div v-for="item in sideMenuComponents">
-        <button class="items-center rounded-md w-12 h-12" @click="swapComponent(item.component)">
+        <button class="items-center rounded-md w-12 h-12 shadow border"
+        :class="[item.component == currentComponent && expandView ? 'border-indigo-500' : 'border-transparent']"
+        @click="swapComponent(item.component)">
           <img :src="item.icon" alt="" class="w-full h-full scale-300">
         </button>
       </div>
     </div>
-    <div class="w-max-1/10">
+    <div class="w-max-1/10 pl-3">
       <DragDropArea v-if="currentComponent == 'DragDropArea' && expandView" />
       <RouteSelect v-if="currentComponent == 'RouteSelect' && expandView" />
       <VisualSettings v-if="currentComponent == 'VisualSettings' && expandView" />
