@@ -52,7 +52,7 @@ function swapComponent(component: string | null) {
         </button>
       </div>
     </div>
-    <div class="w-max-1/10 pl-3">
+    <div class="w-max-1/10 pl-3 overflow-y-scroll">
       <DragDropArea v-if="currentComponent == 'DragDropArea' && expandView" />
       <RouteSelect v-if="currentComponent == 'RouteSelect' && expandView" />
       <VisualSettings v-if="currentComponent == 'VisualSettings' && expandView" />
