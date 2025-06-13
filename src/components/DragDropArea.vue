@@ -23,9 +23,7 @@ const fileInput = ref<HTMLInputElement | null>(null);
 const fileNameLabel = ref("Drag & drop a GTFS zip file here, or <span class='text-blue-600 underline'>click to select</span>");
 const isDragging = ref(false);
 const dataFiles = appInstance.dataFiles;
-import obbData from '../assets/datasets/GTFS_OP_2025_obb.zip';
 
-appInstance.fetchDataFile("OBB 2025 GTFS", obbData);
 function handleUploadButton(e: Event) {
   const inputElement = e.target as HTMLInputElement;
   if (inputElement && inputElement.files && inputElement.files.length > 0)
