@@ -19,6 +19,12 @@ export class App {
     public sanitized = ref(false);
     public geographicScale = ref(100);
     public diagonalTilt = ref(-45);
+    public colors = ref([
+        {keys: "RJ, RJX", color: "#7b0e07"},
+        {keys: "IC, ICE, EC, NJ", color: "#e8002a"},
+        {keys: "R, REX, CJX", color: "#0060aa"},
+        {keys: "S", color: "#0097d9"}
+    ])
 
     public trips = ref<Trip[]>([]);
     public loadedRoutes = ref<RouteD[]>([]);
@@ -158,7 +164,7 @@ export class App {
     }
 
     generateStringGraph(): void {
-        this.d3Gen = new D3Generator(this.trips.value, !this.flipAxis.value, this.compare.value, this.diagonalTilt.value, this.geographicScale.value, this.sanitized.value);
+        this.d3Gen = new D3Generator(this.trips.value, !this.flipAxis.value, this.colors.value, this.compare.value, this.diagonalTilt.value, this.geographicScale.value, this.sanitized.value);
         this.updateViewBox(this.scale.value, this.offset.value);
         this.d3Gen.generate();
     }

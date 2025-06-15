@@ -10,8 +10,8 @@ export class SVGGenerator extends StringChartGenerator {
     private xTrans: string = "0";
     private yTrans: string = "0";
 
-    constructor(svg: SVGSVGElement, data: Trip[], axisFlip: boolean) {
-        super(data, axisFlip);
+    constructor(svg: SVGSVGElement, data: Trip[], axisFlip: boolean, colors: { keys: string; color: string; }[]) {
+        super(data, axisFlip, colors);
         this.svg = svg;
         this.width = this.getDynamicWidth() + this.getOffsetX() + this.getOffsetY();
         this.height = this.getDynamicHeight() + this.getOffsetX() + this.getOffsetY();

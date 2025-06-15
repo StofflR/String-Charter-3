@@ -7,8 +7,8 @@ export class CanvasGenerator extends StringChartGenerator {
     private readonly stopDetailElement: HTMLElement | null = document.getElementById('stop-detail');
     private eventHandlers: ((event: MouseEvent) => void)[] = [];
 
-    constructor(canvas: HTMLCanvasElement, data: Trip[] = [], axisFlip: boolean) {
-        super(data, axisFlip);
+    constructor(canvas: HTMLCanvasElement, data: Trip[] = [], axisFlip: boolean, colors: { keys: string; color: string; }[]) {
+        super(data, axisFlip, colors);
         this.canvas = canvas;
         this.canvas.width = this.getDynamicWidth() + this.getOffsetX() + this.getOffsetY();
         this.canvas.height = this.getDynamicHeight() + this.getOffsetX() + this.getOffsetY();
