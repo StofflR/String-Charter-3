@@ -27,6 +27,7 @@ function example() {
 }
 
 function toggleSubMenu(index: number) {
+    index = activeIndex.value == index ? -1 : index;
     activeIndex.value = index;
 }
 
