@@ -9,7 +9,7 @@ import settingIcon from "../assets/icons/display_settings_24dp.svg";
 import { ref } from "vue";
 
 let expandView = ref(true);
-let currentComponent = ref("DragDropArea");
+let currentComponent = ref("");
 let sideMenuComponents = [
   {
     "name": "Menu",
@@ -42,7 +42,7 @@ function swapComponent(component: string | null) {
 
 
 <template>
-  <div class="flex items-top h-full">
+  <div class="flex items-top h-full border-right">
     <div class="p-2 flex flex-col gap-2 h-full">
       <div v-for="item in sideMenuComponents">
         <button class="items-center rounded-md w-12 h-12 shadow border"
