@@ -12,10 +12,12 @@ export class StringChartGenerator {
     protected comparison: boolean = false;
     private cleanNames: boolean = false;
     protected radius: number = 5;
+    protected colors: { keys: string; color: string; }[]= [];
 
-    constructor(data: Trip[] = [], axisFlip: boolean = false, comparison: boolean = false, cleanNames: boolean = false) {
+    constructor(data: Trip[] = [], axisFlip: boolean = false, colors: { keys: string; color: string; }[] = [], comparison: boolean = false, cleanNames: boolean = false) {
         this.data = comparison ? new ComparisonTrips(data) : new RelativeTrips(data);
         this.axisFlip = axisFlip;
+        this.colors = colors;
         this.cleanNames = cleanNames;
         this.comparison = comparison;
     }
@@ -77,14 +79,15 @@ export class StringChartGenerator {
         this.drawLine(this.getOffsetX() - 20, this.getOffsetY() - 40, this.getOffsetX() - 20, this.getHeight() + 20 + this.getOffsetY());
         for (const trip of this.data.relative_trips) {
             let color: string = "black";
-            if (['RJ', 'RJX'].includes(trip.traintype))
-                color = '#ca2e35';
-            if (['IC', 'ICE', 'EC', 'NJ'].includes(trip.traintype))
-                color = '#e8002a';
-            if (['R', "REX", "CJX"].includes(trip.traintype))
-                color = '#0060aa';
-            if (['S'].includes(trip.traintype))
-                color = '#0097d9';
+
+            console.log(this.colors);
+            for (let index = 0; index < this.colors.length; index++) {
+                const item = this.colors[index];
+                const traintypes = item.keys.toLowerCase().split(/\s*,\s*/);
+
+                if (traintypes.includes(trip.traintype.toLowerCase()))
+                    color = item.color;
+            }
 
             let relativeStops = trip.stops;
             for (let i = 0; i < relativeStops.length - 1; i++) {   //draw one trip
@@ -98,7 +101,7 @@ export class StringChartGenerator {
                 let startY = this.getRelY(currentConnection) * this.getHeight() + this.getOffsetY();
                 let endY = this.getRelY(nextConnection) * this.getHeight() + this.getOffsetY();
 
-                this.drawLine(startX, startY, endX, endY)
+                this.drawLine(startX, startY, endX, endY, color)
                 if (i == 0) {
                     this.drawStopCircle(startX, startY, trip.name, currentConnection.station, currentConnection.timeLabel, color);
                 }

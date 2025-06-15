@@ -44,8 +44,8 @@ export class D3Generator extends StringChartGenerator {
         URL.revokeObjectURL(url);
     }
 
-    constructor(data: Trip[], axisFlip: boolean, compare: boolean, diagonalTilt: number = -45, geographicScale: number = 100, sanitize: boolean = true) {
-        super(data, axisFlip, compare, sanitize);
+    constructor(data: Trip[], axisFlip: boolean, colors: { keys: string; color: string; }[] = [], compare: boolean, diagonalTilt: number = -45, geographicScale: number = 100, sanitize: boolean = true) {
+        super(data, axisFlip, colors, compare, sanitize);
         this.geographicScale = geographicScale;
         this.width = this.getDynamicWidth() + this.getOffsetX() + this.getOffsetY();
         this.height = this.getDynamicHeight() + this.getOffsetX() + this.getOffsetY();

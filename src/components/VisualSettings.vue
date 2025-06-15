@@ -6,6 +6,7 @@ import { appInstance } from "@/AppSettings.ts";
 let sanitized = appInstance.sanitized;
 let geographicScale = appInstance.geographicScale
 let diagonalTilt = appInstance.diagonalTilt;
+let colors = appInstance.colors;
 
 </script>
 
@@ -32,6 +33,13 @@ let diagonalTilt = appInstance.diagonalTilt;
     <input type="range" id="x-tilt-slider" min="-90" max="90" v-model="diagonalTilt" @change="appInstance.generateStringGraph()" class="slider w-full">
   </div>
   <label class="text-1xl font-extrabold bg-clip-text drop-shadow-lg mb-4">Color settings: </label>
+
+
+  <div v-for="(item, index) in colors" :key="index" class="flex mb-1">
+    <input :id="'colorkey'+index" type="text" v-model="item.keys" class="rounded border border-gray-300 mr-1" @input="appInstance.generateStringGraph()">
+    <input :id="'colorval'+index" type="color" v-model="item.color" @change="appInstance.generateStringGraph()">
+  </div>
+  <button @click="colors.push({keys:''})">Add Color</button>
 
 
 </template>
