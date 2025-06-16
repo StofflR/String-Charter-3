@@ -15,7 +15,7 @@ let selectedRoutes = appInstance.routesSelected;
   <ControlSwitches />
   <SliderControls />
   <label for="route-filter" class="mt-6">Filter routes:</label>
-  <input id="rout-filter" v-model="routeFilter"
+  <input id="route-filter" v-model="routeFilter"
     class="block w-full appearance-none bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
 
   <label for="route-select" class="mt-6">Select a route:</label>

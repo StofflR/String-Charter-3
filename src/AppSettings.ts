@@ -36,7 +36,7 @@ export class App {
     public showOnlySelected = ref(false);
     public availableRoutes = computed<string[]>(() => {
         const routes = !this.showOnlySelected.value ? this.routeNames.value : this.routesSelected.value;
-        return routes.filter((route: string) => route.includes(this.routeFilter.value))
+        return routes.filter((route: string) => route.toLowerCase().includes(this.routeFilter.value.toLowerCase()))
     });
     public dataFiles = ref<any[]>([]);
 
