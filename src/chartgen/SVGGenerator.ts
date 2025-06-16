@@ -1,54 +1,50 @@
 import {Trip} from "../interfaces.ts";
 import {StringChartGenerator} from "./StringChartGenerator.ts";
+import xmlFormat from 'xml-formatter';
+import saveAs from 'file-saver';
 
 export class SVGGenerator extends StringChartGenerator {
-    private readonly svg: SVGSVGElement;
+    private svg: SVGSVGElement;
     readonly width: number;
     readonly height: number;
     private readonly svgNS = 'http://www.w3.org/2000/svg';
     public stroke = 'black';
-    private xTrans: string = "0";
-    private yTrans: string = "0";
 
-    constructor(svg: SVGSVGElement, data: Trip[], axisFlip: boolean, colors: { keys: string; color: string; }[]) {
-        super(data, axisFlip, colors);
-        this.svg = svg;
+    constructor(data: Trip[], axisFlip: boolean, colors: {
+        keys: string;
+        color: string;
+    }[] = [], compare: boolean, diagonalTilt: number = -45, geographicScale: number = 100, sanitize: boolean = true) {
+        super(data, axisFlip, colors, compare, diagonalTilt, geographicScale, sanitize);
+        this.svg = document.createElementNS(this.svgNS, 'svg');
         this.width = this.getDynamicWidth() + this.getOffsetX() + this.getOffsetY();
         this.height = this.getDynamicHeight() + this.getOffsetX() + this.getOffsetY();
-        svg.setAttribute('viewBox', "0 0 " + this.width + " " + this.height);
     }
 
     public getHeight(): number {
-        return this.height - (this.getOffsetX() + this.getOffsetY());
+        let scale = this.axisFlip ? this.geographicScale / 100 : 1;
+        return this.height * scale - (this.getOffsetX() + this.getOffsetY());
     }
 
     public getWidth(): number {
-        return this.width - (this.getOffsetX() + this.getOffsetY());
-    }
-
-    private toString(value: number): string {
-        return value.toFixed(4);
+        let scale = !this.axisFlip ? this.geographicScale / 100 : 1;
+        return this.width * scale - (this.getOffsetX() + this.getOffsetY());
     }
 
     protected override drawStopCircle(x: number, y: number, _trip: string, _stop: string, _time: string, color: string = "black"): void {
         const circle = document.createElementNS(this.svgNS, 'circle');
-        circle.setAttribute('cx', this.toString(x));
-        circle.setAttribute('cy', this.toString(y));
-        circle.setAttribute('r', this.toString(this.radius));
-        circle.setAttribute('fill', 'none');
-        circle.setAttribute('stroke', color);
-        circle.setAttribute('transform', this.getTransformString());
+        circle.setAttribute('cx', this.format(x))
+        circle.setAttribute('cy', this.format(y))
+        circle.setAttribute('r', this.format(this.radius))
+        circle.setAttribute('fill', color)
+        circle.setAttribute('stroke', color)
         this.svg.appendChild(circle);
     }
 
     protected override drawLine(startX: number, startY: number, endX: number, endY: number, color: string = "black") {
-        let line = document.createElementNS(this.svgNS, 'line');
-        line.setAttribute('x1', this.toString(startX));
-        line.setAttribute('y1', this.toString(startY));
-        line.setAttribute('x2', this.toString(endX));
-        line.setAttribute('y2', this.toString(endY));
+        let line = document.createElementNS(this.svgNS, 'path');
+        line.setAttribute('stroke-width', String(3));
         line.setAttribute('stroke', color);
-        line.setAttribute('transform', this.getTransformString());
+        line.setAttribute('d', `M ${this.format(startX)} ${this.format(startY)} L ${this.format(endX)} ${this.format(endY)}`);
         this.svg.appendChild(line);
     }
 
@@ -59,30 +55,49 @@ export class SVGGenerator extends StringChartGenerator {
 
     protected override drawDiagonalText(x: number, y: number, stationName: string) {
         const textElement = document.createElementNS(this.svgNS, 'text');
-        textElement.setAttribute('x', this.toString(x));
-        textElement.setAttribute('y', this.toString(y + this.getOffsetY()));
+        textElement.setAttribute('x', this.format(x));
+        textElement.setAttribute('y', this.format(y + this.getOffsetY()));
         textElement.setAttribute('font-size', '12');
         textElement.setAttribute('fill', 'black');
         textElement.setAttribute('text-anchor', 'start');
-        textElement.setAttribute('transform', `rotate(-45 ${this.toString(x)},${this.toString(y + this.getOffsetY())})` + this.getTransformString());
+        textElement.setAttribute('transform', `rotate(${this.diagonalTilt.toString()} ${this.format(x)},${this.format(y + this.getOffsetY())})`);
         textElement.textContent = stationName;
         this.svg.appendChild(textElement);
     }
 
     protected override drawText(text: string, x: number, y: number, alignment: string = 'middle'): void {
         const textElement = document.createElementNS(this.svgNS, 'text');
-        textElement.setAttribute('x', this.toString(x));
-        textElement.setAttribute('y', this.toString(y));
-        textElement.setAttribute('font-size', '12');
+        textElement.setAttribute('x', this.format(x));
+        textElement.setAttribute('y', this.format(y));
+        textElement.setAttribute('text-anchor', alignment || 'start');
+        textElement.setAttribute('dominant-baseline', 'middle');
+        textElement.setAttribute('font-size', '12px');
         textElement.setAttribute('fill', 'black');
-        textElement.setAttribute('text-anchor', alignment);
-        textElement.setAttribute('transform', this.getTransformString());
         textElement.textContent = text;
         this.svg.appendChild(textElement);
     }
 
-    private getTransformString(): string {
-        return "translate(" + this.xTrans + "," + this.yTrans + ")";
-    }
+    public async exportAsSVG() {
+        this.svg = document.createElementNS(this.svgNS, 'svg');
+        this.svg.setAttribute('viewBox', "0 0 " + this.format(this.width) + " " + this.format(this.height));
+        this.generate();
+        // pretty print the SVG
 
+        let input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/svg+xml';
+        input.style.display = 'none';
+        input.placeholder = "Download SVG";
+        input.name = "chart.svg";
+        input.addEventListener('change', _ => {
+            if (input?.files?.length) {
+                let file = input.files[0];
+                const svgData = xmlFormat(new XMLSerializer().serializeToString(this.svg));
+                const blob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+                saveAs(blob, file.webkitRelativePath || file.name || 'chart.svg');
+                input.remove()
+            }
+        });
+        input.click();
+    }
 }
