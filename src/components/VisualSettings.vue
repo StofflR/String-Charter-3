@@ -14,7 +14,7 @@ let colors = appInstance.colors;
   <label class="text-1xl font-extrabold bg-clip-text drop-shadow-lg mb-4">General settings:</label>
 
   <label for="sanitice-switch" class="ml-6 flex items-center cursor-pointer">
-    <span class="mr-3 text-gray-700 font-medium">Sanitize input</span>
+    <span class="mr-3 text-gray-700 font-medium">Sanitise input</span>
     <div class="relative">
       <input id="sanitice-switch" type="checkbox" class="sr-only peer" @change="appInstance.generateStringGraph()"
         v-model="sanitized">
@@ -32,14 +32,14 @@ let colors = appInstance.colors;
     <label for="x-tilt-slider" class="text-sm">Tilt x label:</label>
     <input type="range" id="x-tilt-slider" min="-90" max="90" v-model="diagonalTilt" @change="appInstance.generateStringGraph()" class="slider w-full">
   </div>
-  <label class="text-1xl font-extrabold bg-clip-text drop-shadow-lg mb-4">Color settings: </label>
+  <label class="text-1xl font-extrabold bg-clip-text drop-shadow-lg mb-4">Colour settings: </label>
 
 
   <div v-for="(item, index) in colors" :key="index" class="flex mb-1">
     <input :id="'colorkey'+index" type="text" v-model="item.keys" class="rounded border border-gray-300 mr-1" @input="appInstance.generateStringGraph()">
     <input :id="'colorval'+index" type="color" v-model="item.color" @change="appInstance.generateStringGraph()">
   </div>
-  <button @click="colors.push({keys:''})">Add Color</button>
+  <button @click="colors.push({keys:''})">Add Colour</button>
 
 
 </template>

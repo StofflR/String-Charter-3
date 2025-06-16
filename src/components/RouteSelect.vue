@@ -21,7 +21,7 @@ let selectedRoutes = appInstance.routesSelected;
   <label for="route-select" class="mt-6">Select a route:</label>
 
   <label for="available-switch" class="ml-6 flex items-center cursor-pointer">
-    <span class="mr-3 text-gray-700 font-medium">Sanitize input</span>
+    <span class="mr-3 text-gray-700 font-medium">Sanitise input</span>
     <div class="relative">
       <input id="available-switch" type="checkbox" class="sr-only peer" v-model="showOnlySelected">
       <div class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-blue-500 transition"></div>
