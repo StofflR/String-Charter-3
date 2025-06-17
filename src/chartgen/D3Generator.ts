@@ -7,10 +7,7 @@ export class D3Generator extends StringChartGenerator {
     public container;
     protected width: number;
     protected height: number;
-    protected geographicScale: number;
-    protected diagonalTilt: number;
     protected stopCirlces: { x: number, y: number, trip: string, stop: string, time: string, color: string }[] = [];
-    protected format = d3.format(".2f");
 
     public getHeight(): number {
         let scale = this.axisFlip ? this.geographicScale / 100 : 1;
@@ -22,34 +19,10 @@ export class D3Generator extends StringChartGenerator {
         return this.width * scale - (this.getOffsetX() + this.getOffsetY());
     }
 
-    public exportAsSVG() {
-        if (!this.container) {
-            console.error('SVG element not found');
-            return;
-        }
-
-        const svgData = new XMLSerializer().serializeToString(this.container);
-        const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'graph.svg';
-        link.style.display = 'none';
-        document.body.appendChild(link);
-
-        link.click();
-
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-    }
-
     constructor(data: Trip[], axisFlip: boolean, colors: { keys: string; color: string; }[] = [], compare: boolean, diagonalTilt: number = -45, geographicScale: number = 100, sanitize: boolean = true) {
-        super(data, axisFlip, colors, compare, sanitize);
-        this.geographicScale = geographicScale;
+        super(data, axisFlip, colors, compare, diagonalTilt, geographicScale, sanitize);
         this.width = this.getDynamicWidth() + this.getOffsetX() + this.getOffsetY();
         this.height = this.getDynamicHeight() + this.getOffsetX() + this.getOffsetY();
-        this.diagonalTilt = diagonalTilt;
         this.container = document.getElementById("graphCanvas") as HTMLDivElement;
         if (!this.container) {
             console.error('Container with id "graphCanvas" not found.');
@@ -192,7 +165,7 @@ export class D3Generator extends StringChartGenerator {
         this.svg.append('text')
             .attr('x', this.format(_x))
             .attr('y', this.format(_y + this.getOffsetY()))
-            .attr('font-size', '12px')
+            .attr('font-size', '12')
             .attr('fill', 'black')
             .attr('text-anchor', 'start')
             .attr('transform', `rotate(${this.diagonalTilt.toString()} ${this.format(_x)},${this.format(_y + this.getOffsetY())})`)

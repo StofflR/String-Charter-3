@@ -67,4 +67,4 @@ Running
 * [Mobilitätsverbünde Österreich](https://data.mobilitaetsverbuende.at/de/data-sets), several GTFS datasets
 of austrian federal transport agencies, registration and licence agreement necessary
 * [SNCB/NMBS](https://gtfs.irail.be/nmbs/gtfs/latest.zip), GTFS Feed for the National Railway Company of Belgium, CC0
-
+* [Go_North_East](https://www.gonortheast.co.uk/open-data), Go North East Ltd 2025, Open Government License Version 3.0

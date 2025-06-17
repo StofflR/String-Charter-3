@@ -4,22 +4,28 @@ import {
 } from "../Utility";
 import { RelativeTrips } from "./RelativeTrips";
 import { ComparisonTrips } from "./ComparisonTrips";
+import {format} from "d3-format";
 
 export class StringChartGenerator {
 
     protected data: RelativeTrips;
     protected axisFlip: boolean = false;
     protected comparison: boolean = false;
-    private cleanNames: boolean = false;
+    protected diagonalTilt: number;
+    private readonly cleanNames: boolean = false;
     protected radius: number = 5;
     protected colors: { keys: string; color: string; }[]= [];
+    protected geographicScale: number;
+    protected format = format(".2f");
 
-    constructor(data: Trip[] = [], axisFlip: boolean = false, colors: { keys: string; color: string; }[] = [], comparison: boolean = false, cleanNames: boolean = false) {
-        this.data = comparison ? new ComparisonTrips(data) : new RelativeTrips(data);
+    constructor(data: Trip[], axisFlip: boolean, colors: { keys: string; color: string; }[] = [], compare: boolean, diagonalTilt: number = -45, geographicScale: number = 100, sanitize: boolean = true) {
+        this.geographicScale = geographicScale;
+        this.data = compare ? new ComparisonTrips(data) : new RelativeTrips(data);
         this.axisFlip = axisFlip;
         this.colors = colors;
-        this.cleanNames = cleanNames;
-        this.comparison = comparison;
+        this.diagonalTilt = diagonalTilt;
+        this.cleanNames = sanitize;
+        this.comparison = compare;
     }
 
     getDynamicWidth() {
