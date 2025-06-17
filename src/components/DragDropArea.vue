@@ -1,17 +1,28 @@
 <template>
-  <label for="drop-area" class="text-1xl font-extrabold bg-clip-text drop-shadow-lg mb-4">Select or Upload data</label>
-  <div @dragover.prevent="onDragOver" @dragleave.prevent="onDragLeave" @drop.prevent="onDrop"
-       :class="{ 'bg-gray-200': isDragging }" id="drop-area" @click="fileInput?.click()"
-       class="border-2 border-dashed border-gray-400 rounded-lg p-8 text-center cursor-pointer transition hover:bg-gray-100 ">
-    <p v-html="fileNameLabel"></p>
-    <input ref="fileInput" @change="handleUploadButton" type="file" id="file-input" accept=".zip" class="hidden"/>
-  </div>
-  <label for="drop-area" class="text-1xl font-extrabold bg-clip-text drop-shadow-lg mb-4">Available data sets:</label>
-  <div v-for="dataFile in dataFiles" class="flex items-left justify-left mt-4 mb-4 mx-2">
-    <button @click="appInstance.handleGtfsUpload(dataFile.data)"
-            class="px-6 py-3 bg-gradient-to-r w-full from-blue-500 to-blue-700 text-white font-semibold rounded-full shadow-md transition transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
-      Load {{dataFile.name}}
-    </button>
+  <div class="mr-4 justify-center ml-4">
+    <hr class="my-3 border-gray-200"/>
+    <div class="flex">
+      <div class="w-2/5 mr-10">
+        <div @dragover.prevent="onDragOver" @dragleave.prevent="onDragLeave" @drop.prevent="onDrop"
+             :class="{ 'bg-gray-200': isDragging }" id="drop-area" @click="fileInput?.click()"
+             class="border-2 border-dashed border-gray-400 rounded-lg p-8 text-center cursor-pointer transition hover:bg-gray-100 ">
+          <p v-html="fileNameLabel" class="flex w-full gap-2"/>
+          <input ref="fileInput" @change="handleUploadButton" type="file" id="file-input" accept=".zip" class="hidden"/>
+        </div>
+      </div>
+      <div class="w-min">
+        <label for="route-select" class="text-1xl w-max font-extrabold bg-clip-text drop-shadow-lg">Available data
+          sets:</label>
+        <select id="route-select" class="form-control p-2 border border-gray-300 rounded-lg"
+                @change="handleSelection($event)">
+          <option value="" selected disabled>Choose Route:</option>
+          <option v-for="dataFile in dataFiles" :value="dataFile.name" :key="dataFile.name">Load {{
+              dataFile.name
+            }}
+          </option>
+        </select>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -20,9 +31,17 @@ import {ref} from "vue";
 import {appInstance} from "../AppSettings.ts";
 
 const fileInput = ref<HTMLInputElement | null>(null);
-const fileNameLabel = ref("Drag & drop a GTFS zip file here, or <span class='text-blue-600 underline'>click to select</span>");
+const fileNameLabel = ref("Drag & drop a GTFS zip file here, or <span class='text-blue-600 underline'> click to select </span>");
 const isDragging = ref(false);
 const dataFiles = appInstance.dataFiles;
+
+function handleSelection(event: Event) {
+  if (!event.target || !(event.target instanceof HTMLSelectElement)) return;
+  let selectedValue = event.target.value;
+  let data = appInstance.dataFiles.value.find(file => file.name === selectedValue)?.data;
+  if (!data) return;
+  appInstance.handleGtfsUpload(data);
+}
 
 function handleUploadButton(e: Event) {
   const inputElement = e.target as HTMLInputElement;
