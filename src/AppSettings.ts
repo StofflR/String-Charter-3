@@ -20,6 +20,8 @@ export class App {
     public sanitized = ref(false);
     public geographicScale = ref(100);
     public diagonalTilt = ref(-45);
+    public radius = ref(5);
+    public strokewidth = ref(3);
     public colors = ref([
         {keys: "RJ, RJX", color: "#7b0e07"},
         {keys: "IC, ICE, EC, NJ", color: "#e8002a"},
@@ -169,8 +171,8 @@ export class App {
     }
 
     generateStringGraph(): void {
-        this.d3Gen = new D3Generator(this.trips.value, !this.flipAxis.value, this.colors.value, this.compare.value, this.diagonalTilt.value, this.geographicScale.value, this.sanitized.value);
-        this.svgGen = new SVGGenerator(this.trips.value, !this.flipAxis.value, this.colors.value, this.compare.value, this.diagonalTilt.value, this.geographicScale.value, this.sanitized.value);
+        this.d3Gen = new D3Generator(this.trips.value, !this.flipAxis.value, this.colors.value, this.radius.value, this.strokewidth.value, this.compare.value, this.diagonalTilt.value, this.geographicScale.value, this.sanitized.value);
+        this.svgGen = new SVGGenerator(this.trips.value, !this.flipAxis.value, this.colors.value, this.radius.value, this.strokewidth.value, this.compare.value, this.diagonalTilt.value, this.geographicScale.value, this.sanitized.value);
         this.updateViewBox(this.scale.value, this.offset.value);
         this.d3Gen.generate();
         this.svgGen.generate();

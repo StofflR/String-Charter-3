@@ -13,8 +13,8 @@ export class SVGGenerator extends StringChartGenerator {
     constructor(data: Trip[], axisFlip: boolean, colors: {
         keys: string;
         color: string;
-    }[] = [], compare: boolean, diagonalTilt: number = -45, geographicScale: number = 100, sanitize: boolean = true) {
-        super(data, axisFlip, colors, compare, diagonalTilt, geographicScale, sanitize);
+    }[] = [], radius: number, strokewidth: number, compare: boolean, diagonalTilt: number = -45, geographicScale: number = 100, sanitize: boolean = true) {
+        super(data, axisFlip, colors, radius, strokewidth, compare, diagonalTilt, geographicScale, sanitize);
         this.svg = document.createElementNS(this.svgNS, 'svg');
         this.width = this.getDynamicWidth() + this.getOffsetX() + this.getOffsetY();
         this.height = this.getDynamicHeight() + this.getOffsetX() + this.getOffsetY();
@@ -40,9 +40,9 @@ export class SVGGenerator extends StringChartGenerator {
         this.svg.appendChild(circle);
     }
 
-    protected override drawLine(startX: number, startY: number, endX: number, endY: number, color: string = "black") {
+    protected override drawLine(startX: number, startY: number, endX: number, endY: number, color: string = "black", _strokewidth: number = 3) {
         let line = document.createElementNS(this.svgNS, 'path');
-        line.setAttribute('stroke-width', String(3));
+        line.setAttribute('stroke-width', String(_strokewidth));
         line.setAttribute('stroke', color);
         line.setAttribute('d', `M ${this.format(startX)} ${this.format(startY)} L ${this.format(endX)} ${this.format(endY)}`);
         this.svg.appendChild(line);

@@ -7,6 +7,8 @@ let sanitized = appInstance.sanitized;
 let geographicScale = appInstance.geographicScale
 let diagonalTilt = appInstance.diagonalTilt;
 let colors = appInstance.colors;
+let radius = appInstance.radius;
+let strokewidth = appInstance.strokewidth;
 let tiltable = appInstance.flipAxis;
 
 </script>
@@ -33,9 +35,19 @@ let tiltable = appInstance.flipAxis;
     <label for="x-tilt-slider" class="text-sm">Tilt x label:</label>
     <input type="range" id="x-tilt-slider" min="-90" max="90" v-model="diagonalTilt" @input="appInstance.generateStringGraph()" class="slider w-full">
   </div>
+  <br/>
+  <div class="flex items-center gap-2">
+    <label for="radius-slider" class="text-sm">Circle Radius:</label>
+    <input type="range" id="radius-slider" min="1" max="10" v-model="radius" @input="appInstance.generateStringGraph()" class="slider w-full">
+  </div>
+  <div class="flex items-center gap-2">
+    <label for="strokewidth-slider" class="text-sm">Stroke Width:</label>
+    <input type="range" id="strokewith-slider" min="1" max="10" v-model="strokewidth" @input="appInstance.generateStringGraph()" class="slider w-full">
+  </div>
+
+  <hr class="my-3 border-gray-200"/>
+  
   <label class="text-1xl font-extrabold bg-clip-text drop-shadow-lg mb-4">Colour settings: </label>
-
-
   <div v-for="(item, index) in colors" :key="index" class="flex mb-1">
     <input :id="'colorkey'+index" type="text" v-model="item.keys" class="rounded border border-gray-300 mr-1" @input="appInstance.generateStringGraph()">
     <input :id="'colorval'+index" type="color" v-model="item.color" @change="appInstance.generateStringGraph()">

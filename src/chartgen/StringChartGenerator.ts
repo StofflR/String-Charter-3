@@ -14,15 +14,20 @@ export class StringChartGenerator {
     protected diagonalTilt: number;
     private readonly cleanNames: boolean = false;
     protected radius: number = 5;
+    protected strokewidth: number = 3;
     protected colors: { keys: string; color: string; }[]= [];
     protected geographicScale: number;
     protected format = format(".2f");
 
-    constructor(data: Trip[], axisFlip: boolean, colors: { keys: string; color: string; }[] = [], compare: boolean, diagonalTilt: number = -45, geographicScale: number = 100, sanitize: boolean = true) {
+    constructor(data: Trip[], axisFlip: boolean, colors: { keys: string; color: string; }[] = [], 
+        radius: number, strokewidth: number, compare: boolean, diagonalTilt: number = -45, geographicScale: number = 100, sanitize: boolean = true) {
         this.geographicScale = geographicScale;
         this.data = compare ? new ComparisonTrips(data) : new RelativeTrips(data);
         this.axisFlip = axisFlip;
         this.colors = colors;
+        this.radius = radius;
+        this.strokewidth = strokewidth;
+        console.log(radius)
         this.diagonalTilt = diagonalTilt;
         this.cleanNames = sanitize;
         this.comparison = compare;
@@ -106,7 +111,7 @@ export class StringChartGenerator {
                 let startY = this.getRelY(currentConnection) * this.getHeight() + this.getOffsetY();
                 let endY = this.getRelY(nextConnection) * this.getHeight() + this.getOffsetY();
 
-                this.drawLine(startX, startY, endX, endY, color)
+                this.drawLine(startX, startY, endX, endY, color, this.strokewidth)
                 if (i == 0) {
                     this.drawStopCircle(startX, startY, trip.name, currentConnection.station, currentConnection.timeLabel, color);
                 }
@@ -125,7 +130,7 @@ export class StringChartGenerator {
         return stationName;
     }
 
-    protected drawLine(_startX: number, _startY: number, _endX: number, _endY: number, _color: string = ""): void {
+    protected drawLine(_startX: number, _startY: number, _endX: number, _endY: number, _color: string = "", _strokewidth: number = 3): void {
         // This method should be overridden in subclasses to draw the line
         throw ('drawLine method not implemented');
     }

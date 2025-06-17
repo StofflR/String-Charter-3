@@ -7,8 +7,8 @@ export class CanvasGenerator extends StringChartGenerator {
     private readonly stopDetailElement: HTMLElement | null = document.getElementById('stop-detail');
     private eventHandlers: ((event: MouseEvent) => void)[] = [];
 
-    constructor(canvas: HTMLCanvasElement, data: Trip[] = [], axisFlip: boolean, colors: { keys: string; color: string; }[]) {
-        super(data, axisFlip, colors, false, -45, 100, true);
+    constructor(canvas: HTMLCanvasElement, data: Trip[] = [], axisFlip: boolean, colors: { keys: string; color: string; }[], radius: number, strokewidth: number) {
+        super(data, axisFlip, colors, radius, strokewidth, false, -45, 100, true);
         this.canvas = canvas;
         this.canvas.width = this.getDynamicWidth() + this.getOffsetX() + this.getOffsetY();
         this.canvas.height = this.getDynamicHeight() + this.getOffsetX() + this.getOffsetY();
@@ -42,12 +42,13 @@ export class CanvasGenerator extends StringChartGenerator {
         this.createMouseOverStopInfo(x, y, trip, stop, time);
     }
 
-    protected override drawLine(startX: number, startY: number, endX: number, endY: number, color: string = "black") {
+    protected override drawLine(startX: number, startY: number, endX: number, endY: number, color: string = "black", _strokewidth: number = 3) {
         this.context.beginPath();
         this.context.moveTo(startX, startY);
         this.context.lineTo(endX, endY);
         this.context.closePath();
         this.context.strokeStyle = color;
+        this.context.lineWidth = _strokewidth;
         this.context.stroke();
     }
 

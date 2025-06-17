@@ -19,8 +19,8 @@ export class D3Generator extends StringChartGenerator {
         return this.width * scale - (this.getOffsetX() + this.getOffsetY());
     }
 
-    constructor(data: Trip[], axisFlip: boolean, colors: { keys: string; color: string; }[] = [], compare: boolean, diagonalTilt: number = -45, geographicScale: number = 100, sanitize: boolean = true) {
-        super(data, axisFlip, colors, compare, diagonalTilt, geographicScale, sanitize);
+    constructor(data: Trip[], axisFlip: boolean, colors: { keys: string; color: string; }[] = [], radius: number, strokewidth: number, compare: boolean, diagonalTilt: number = -45, geographicScale: number = 100, sanitize: boolean = true) {
+        super(data, axisFlip, colors, radius, strokewidth, compare, diagonalTilt, geographicScale, sanitize);
         this.width = this.getDynamicWidth() + this.getOffsetX() + this.getOffsetY();
         this.height = this.getDynamicHeight() + this.getOffsetX() + this.getOffsetY();
         this.container = document.getElementById("graphCanvas") as HTMLDivElement;
@@ -39,13 +39,13 @@ export class D3Generator extends StringChartGenerator {
         this.container.append(this.svg.node()!);
     }
 
-    protected override drawLine(_startX: number, _startY: number, _endX: number, _endY: number, _color: string = "black") {
+    protected override drawLine(_startX: number, _startY: number, _endX: number, _endY: number, _color: string = "black", _strokewidth: number = 3) {
         if (!this.svg) {
             console.error('SVG element not initialized.');
             return;
         }
         this.svg.append('path')
-            .attr('stroke-width', 3)
+            .attr('stroke-width', _strokewidth)
             .attr('stroke', _color)
             .attr('d', `M ${this.format(_startX)} ${this.format(_startY)} L ${this.format(_endX)} ${this.format(_endY)}`);
     }
