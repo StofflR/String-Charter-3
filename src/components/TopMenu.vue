@@ -32,7 +32,10 @@ function toggleSubMenu(index: number) {
 }
 
 import obbData from '../assets/datasets/GTFS_OP_2025_obb.zip';
+import goNortheastData from '../assets/datasets/gonortheast_1747916855.zip'
 appInstance.fetchDataFile("ÖBB 2025", obbData);
+appInstance.fetchDataFile("GO NORTHEAST 2025", goNortheastData);
+
 function handleUploadButton(e: Event) {
   const inputElement = e.target as HTMLInputElement;
   if (inputElement && inputElement.files && inputElement.files.length > 0)
