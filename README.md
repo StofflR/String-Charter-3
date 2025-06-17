@@ -62,4 +62,9 @@ Running
  will push to the branch and the page will be visible. For this repo the corresponding page is [String Charter 3](https://stofflr.github.io/String-Charter-3/).
 
 ### Data sources
-* [GTFS_OP_2025_obb.zip](https://data.oebb.at/de/datensaetze~soll-fahrplan-gtfs~), ÖBB-Personenverkehr AG, CC BY 4.0
+* [ÖBB](https://data.oebb.at/de/datensaetze~soll-fahrplan-gtfs~), ÖBB-Personenverkehr AG, CC-BY 4.0
+* [GTFS.de](https://gtfs.de/en/feeds/), GTFS Feeds for Germany, CC-BY 4.0
+* [Mobilitätsverbünde Österreich](https://data.mobilitaetsverbuende.at/de/data-sets), several GTFS datasets
+of austrian federal transport agencies, registration and licence agreement necessary
+* [SNCB/NMBS](https://gtfs.irail.be/nmbs/gtfs/latest.zip), GTFS Feed for the National Railway Company of Belgium, CC0
+
