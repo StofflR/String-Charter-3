@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { appInstance } from '../AppSettings';
-import { ref } from 'vue';
+import {appInstance} from '../AppSettings';
+import {ref} from 'vue';
 
 let scaling = false;
 let selectedCursor = ref('grab');
@@ -17,7 +17,6 @@ document.addEventListener('keydown', (event) => {
 document.addEventListener('keyup', () => {
   selectedCursor.value = 'grab';
 });
-
 
 
 function scale(event: MouseEvent) {
@@ -41,12 +40,16 @@ function scale(event: MouseEvent) {
 }
 
 document.addEventListener("mousemove", scale);
-document.addEventListener("mousedown", () => { scaling = true; });
-document.addEventListener("mouseup", () => { scaling = false; });
+document.addEventListener("mousedown", () => {
+  scaling = true;
+});
+document.addEventListener("mouseup", () => {
+  scaling = false;
+});
 document.addEventListener("wheel", (event) => {
 
   const canvas = document.getElementById('graphCanvas');
-  if (!canvas || !canvas.contains(event.target as Node)) {
+  if (!canvas || !canvas.contains(event.target as Node) || !event.shiftKey) {
     return;
   }
 
@@ -60,7 +63,7 @@ document.addEventListener("wheel", (event) => {
 
 
 <template>
-  <div id="string-graph-card" class="flex w-full h-full">
-    <div id="graphCanvas" class="flex w-full h-full" v-bind:style="{cursor: selectedCursor}"></div>
+  <div id="string-graph-card" class="w-full">
+    <div id="graphCanvas" class="w-full h-max " v-bind:style="{cursor: selectedCursor}"></div>
   </div>
 </template>

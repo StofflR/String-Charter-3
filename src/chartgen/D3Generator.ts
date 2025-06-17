@@ -34,7 +34,6 @@ export class D3Generator extends StringChartGenerator {
             console.error('Failed to create SVG element.');
             return;
         }
-        this.svg.attr('class', 'flex w-full h-full');
         this.svg.attr('id', 'svgGraph');
         this.container.append(this.svg.node()!);
     }
