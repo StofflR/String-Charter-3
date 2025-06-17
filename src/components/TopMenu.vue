@@ -61,11 +61,21 @@ function handleUploadButton(e: Event) {
             </li>
             </ul>
         </li>
+        <li>
+            <div @click="toggleSubMenu(1)" class="px-1 hover:bg-gray-300 " :class="{'bg-gray-300': activeIndex == 1}">
+            Export
+            </div>
+            <ul class="absolute z-1 bg-gray-300 rounded-b" v-show="activeIndex == 1">
+            <li class="px-1 hover:bg-gray-400" @click="appInstance.svgGen?.exportAsSVG">
+                Export as SVG
+            </li>
+            </ul>
+        </li>
         <li v-for="(menu, index) in menus" :key="index" @click="menu.action">
-            <div @click="toggleSubMenu(index+1)" class="px-1 hover:bg-gray-300 " :class="{'bg-gray-300': activeIndex == index+1}">
+            <div @click="toggleSubMenu(index+2)" class="px-1 hover:bg-gray-300 " :class="{'bg-gray-300': activeIndex == index+2}">
                 {{ menu.title }}
             </div>
-            <ul class="absolute z-1 bg-gray-300 rounded-b" v-show="activeIndex == index+1">
+            <ul class="absolute z-1 bg-gray-300 rounded-b" v-show="activeIndex == index+2">
                 <li class="px-1 hover:bg-gray-400" v-for="(sub, subIndex) in menu.submenu" :key="subIndex" @click="sub.action">
                     {{ sub.title }}
                 </li>
