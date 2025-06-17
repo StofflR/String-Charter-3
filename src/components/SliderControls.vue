@@ -12,11 +12,9 @@ let offset = appInstance.offset;
       <input type="range" id="view-slider" min="0" max="100" value="100" v-model="scale"
         @input="appInstance.updateViewBox(scale, offset)" class="slider w-full">
     </div>
-    <div class="flex items-center gap-2">
-      <label for="offset-slider" class="text-sm">Offset:</label>
+    <div class="flex items-center gap-2" v-if="scale < 100">
+      <label for="offset-slider" class="text-sm" >Offset:</label>
       <input type="range" id="offset-slider" min="0" max="100" v-model="offset"
         @input="appInstance.updateViewBox(scale, offset)" class="slider w-full">
     </div>
 </template>
-
-<style scoped></style>
