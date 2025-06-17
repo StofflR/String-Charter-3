@@ -8,8 +8,8 @@ const host = process.env.TAURI_DEV_HOST;
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
-    base: "https://stofflr.github.io/String-Charter-3/",
     root: './', // <== tells Vite where your app lives
+    base: './', // <== tells Vite where your assets live
     plugins: [
         tailwindcss(),
         vue()],
