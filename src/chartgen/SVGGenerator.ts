@@ -71,7 +71,7 @@ export class SVGGenerator extends StringChartGenerator {
         textElement.setAttribute('y', this.format(y));
         textElement.setAttribute('text-anchor', alignment || 'start');
         textElement.setAttribute('dominant-baseline', 'middle');
-        textElement.setAttribute('font-size', '12px');
+        textElement.setAttribute('font-size', '12');
         textElement.setAttribute('fill', 'black');
         textElement.textContent = text;
         this.svg.appendChild(textElement);
