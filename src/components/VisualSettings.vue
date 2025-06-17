@@ -7,6 +7,7 @@ let sanitized = appInstance.sanitized;
 let geographicScale = appInstance.geographicScale
 let diagonalTilt = appInstance.diagonalTilt;
 let colors = appInstance.colors;
+let tiltable = appInstance.flipAxis;
 
 </script>
 
@@ -26,11 +27,11 @@ let colors = appInstance.colors;
 
   <div class="flex items-center gap-2">
     <label for="distance-scale-slider" class="text-sm">Scale geographic distance:</label>
-    <input type="range" id="distance-scale-slide" min="30" max="200" v-model="geographicScale" @change="appInstance.generateStringGraph()" class="slider w-full">
+    <input type="range" id="distance-scale-slide" min="30" max="200" v-model="geographicScale" @input="appInstance.generateStringGraph()" class="slider w-full">
   </div>
-  <div class="flex items-center gap-2">
+  <div class="flex items-center gap-2" v-if="tiltable == true">
     <label for="x-tilt-slider" class="text-sm">Tilt x label:</label>
-    <input type="range" id="x-tilt-slider" min="-90" max="90" v-model="diagonalTilt" @change="appInstance.generateStringGraph()" class="slider w-full">
+    <input type="range" id="x-tilt-slider" min="-90" max="90" v-model="diagonalTilt" @input="appInstance.generateStringGraph()" class="slider w-full">
   </div>
   <label class="text-1xl font-extrabold bg-clip-text drop-shadow-lg mb-4">Colour settings: </label>
 
