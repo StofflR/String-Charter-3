@@ -1,9 +1,7 @@
-import { RelativeStop, Trip } from "../interfaces";
-import {
-    splitLongStationName
-} from "../Utility";
-import { RelativeTrips } from "./RelativeTrips";
-import { ComparisonTrips } from "./ComparisonTrips";
+import {RelativeStop, Trip, Colour} from "../interfaces";
+import {splitLongStationName} from "../Utility";
+import {RelativeTrips} from "./RelativeTrips";
+import {ComparisonTrips} from "./ComparisonTrips";
 import {format} from "d3-format";
 
 export class StringChartGenerator {
@@ -15,12 +13,12 @@ export class StringChartGenerator {
     private readonly cleanNames: boolean = false;
     protected radius: number = 5;
     protected strokewidth: number = 3;
-    protected colors: { keys: string; color: string; }[]= [];
+    protected colors: Colour[] = [];
     protected geographicScale: number;
-    protected format = format(".2f");
 
-    constructor(data: Trip[], axisFlip: boolean, colors: { keys: string; color: string; }[] = [], 
-        radius: number, strokewidth: number, compare: boolean, diagonalTilt: number = -45, geographicScale: number = 100, sanitize: boolean = true) {
+
+    constructor(data: Trip[], axisFlip: boolean, colors: { keys: string; color: string; }[] = [],
+                radius: number, strokewidth: number, compare: boolean, diagonalTilt: number = -45, geographicScale: number = 100, sanitize: boolean = true) {
         this.geographicScale = geographicScale;
         this.data = compare ? new ComparisonTrips(data) : new RelativeTrips(data);
         this.axisFlip = axisFlip;
@@ -31,6 +29,10 @@ export class StringChartGenerator {
         this.diagonalTilt = diagonalTilt;
         this.cleanNames = sanitize;
         this.comparison = compare;
+    }
+
+    protected format(value: number): string {
+        return format(".2f")(value);
     }
 
     getDynamicWidth() {

@@ -3,11 +3,12 @@ import {StringChartGenerator} from "./StringChartGenerator.ts";
 import xmlFormat from 'xml-formatter';
 import saveAs from 'file-saver';
 
+let svgNS: string = 'http://www.w3.org/2000/svg';
+
 export class SVGGenerator extends StringChartGenerator {
-    private svg: SVGSVGElement;
+    private svg: Element;
     readonly width: number;
     readonly height: number;
-    private readonly svgNS = 'http://www.w3.org/2000/svg';
     public stroke = 'black';
 
     constructor(data: Trip[], axisFlip: boolean, colors: {
@@ -15,7 +16,7 @@ export class SVGGenerator extends StringChartGenerator {
         color: string;
     }[] = [], radius: number, strokewidth: number, compare: boolean, diagonalTilt: number = -45, geographicScale: number = 100, sanitize: boolean = true) {
         super(data, axisFlip, colors, radius, strokewidth, compare, diagonalTilt, geographicScale, sanitize);
-        this.svg = document.createElementNS(this.svgNS, 'svg');
+        this.svg = document.createElementNS(svgNS, 'svg');
         this.width = this.getDynamicWidth() + this.getOffsetX() + this.getOffsetY();
         this.height = this.getDynamicHeight() + this.getOffsetX() + this.getOffsetY();
     }
@@ -31,7 +32,7 @@ export class SVGGenerator extends StringChartGenerator {
     }
 
     protected override drawStopCircle(x: number, y: number, _trip: string, _stop: string, _time: string, color: string = "black"): void {
-        const circle = document.createElementNS(this.svgNS, 'circle');
+        const circle = document.createElementNS(svgNS, 'circle');
         circle.setAttribute('cx', this.format(x))
         circle.setAttribute('cy', this.format(y))
         circle.setAttribute('r', this.format(this.radius))
@@ -41,7 +42,7 @@ export class SVGGenerator extends StringChartGenerator {
     }
 
     protected override drawLine(startX: number, startY: number, endX: number, endY: number, color: string = "black", _strokewidth: number = 3) {
-        let line = document.createElementNS(this.svgNS, 'path');
+        let line = document.createElementNS(svgNS, 'path');
         line.setAttribute('stroke-width', String(_strokewidth));
         line.setAttribute('stroke', color);
         line.setAttribute('d', `M ${this.format(startX)} ${this.format(startY)} L ${this.format(endX)} ${this.format(endY)}`);
@@ -54,7 +55,7 @@ export class SVGGenerator extends StringChartGenerator {
     }
 
     protected override drawDiagonalText(x: number, y: number, stationName: string) {
-        const textElement = document.createElementNS(this.svgNS, 'text');
+        const textElement = document.createElementNS(svgNS, 'text');
         textElement.setAttribute('x', this.format(x));
         textElement.setAttribute('y', this.format(y + this.getOffsetY()));
         textElement.setAttribute('font-size', '12');
@@ -66,7 +67,7 @@ export class SVGGenerator extends StringChartGenerator {
     }
 
     protected override drawText(text: string, x: number, y: number, alignment: string = 'middle'): void {
-        const textElement = document.createElementNS(this.svgNS, 'text');
+        const textElement = document.createElementNS(svgNS, 'text');
         textElement.setAttribute('x', this.format(x));
         textElement.setAttribute('y', this.format(y));
         textElement.setAttribute('text-anchor', alignment || 'start');
@@ -78,7 +79,7 @@ export class SVGGenerator extends StringChartGenerator {
     }
 
     public async exportAsSVG() {
-        this.svg = document.createElementNS(this.svgNS, 'svg');
+        this.svg = document.createElementNS(svgNS, 'svg');
         this.svg.setAttribute('viewBox', "0 0 " + this.format(this.width) + " " + this.format(this.height));
         this.generate();
         // pretty print the SVG

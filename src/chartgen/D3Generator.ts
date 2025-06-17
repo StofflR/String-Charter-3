@@ -1,5 +1,5 @@
 import * as d3 from "d3-selection";
-import { Trip } from "../interfaces.ts";
+import {StopCircle, Trip} from "../interfaces.ts";
 import { StringChartGenerator } from "./StringChartGenerator.ts";
 
 export class D3Generator extends StringChartGenerator {
@@ -7,7 +7,7 @@ export class D3Generator extends StringChartGenerator {
     public container;
     protected width: number;
     protected height: number;
-    protected stopCirlces: { x: number, y: number, trip: string, stop: string, time: string, color: string }[] = [];
+    protected stopCircles: StopCircle[] = [];
 
     public getHeight(): number {
         let scale = this.axisFlip ? this.geographicScale / 100 : 1;
@@ -66,7 +66,7 @@ export class D3Generator extends StringChartGenerator {
 
     protected drawStopCircle(_x: number, _y: number, _trip: string, _stop: string, _time: string, _color: string = "") {
         // save stop circles to list draw after all lines are drawn
-        this.stopCirlces.push({
+        this.stopCircles.push({
             x: _x,
             y: _y,
             trip: _trip,
@@ -173,7 +173,7 @@ export class D3Generator extends StringChartGenerator {
 
     override generate() {
         super.generate();
-        for (const circle of this.stopCirlces) {
+        for (const circle of this.stopCircles) {
             this._drawStopCircle(circle.x, circle.y, circle.trip, circle.stop, circle.time, circle.color);
         }
     }

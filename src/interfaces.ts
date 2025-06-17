@@ -14,6 +14,7 @@ export interface Trip {
     stations: string[];
     traintype: string;
 }
+
 export interface NormalizedTrip {
     name: string;
     stops: RelativeStop[];
@@ -26,6 +27,7 @@ export interface RelativeStop {
     time: number; // Normalized time
     distance: number; // Normalized distance
 }
+
 export interface Route {
     id: string;
     name: string;
@@ -36,4 +38,18 @@ export interface RouteD {
     name: string;
     shortname: string;
     trips: Trip[];
+}
+
+export interface StopCircle {
+    x: number,
+    y: number,
+    trip: string,
+    stop: string,
+    time: string,
+    color: string
+}
+
+export interface Colour {
+    keys: string;
+    color: string;
 }

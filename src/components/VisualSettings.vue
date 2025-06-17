@@ -42,19 +42,11 @@ let tiltable = appInstance.flipAxis;
                @input="appInstance.generateStringGraph()" class="slider w-full">
       </div>
     </div>
-    <label class="text-1xl font-extrabold bg-clip-text drop-shadow-lg mb-4">Colour settings: </label>
 
-    <div class="flex items-center gap-2">
-      <label for="distance-scale-slider" class="text-sm">Scale geographic distance:</label>
-      <input type="range" id="distance-scale-slide" min="30" max="200" v-model="geographicScale"
-             @input="appInstance.generateStringGraph()" class="slider w-full">
-    </div>
-    <div class="flex items-center gap-2" v-if="tiltable == true">
-      <label for="x-tilt-slider" class="text-sm">Tilt x label:</label>
-      <input type="range" id="x-tilt-slider" min="-90" max="90" v-model="diagonalTilt"
-             @input="appInstance.generateStringGraph()" class="slider w-full">
-    </div>
-    <br/>
+    <hr class="my-3 border-gray-200"/>
+    <label class="text-1xl font-extrabold bg-clip-text drop-shadow-lg mb-4">Colour settings: </label>
+    <div class="flex gap-6">
+
     <div class="flex items-center gap-2">
       <label for="radius-slider" class="text-sm">Circle Radius:</label>
       <input type="range" id="radius-slider" min="1" max="10" v-model="radius"
@@ -65,10 +57,8 @@ let tiltable = appInstance.flipAxis;
       <input type="range" id="strokewith-slider" min="1" max="10" v-model="strokewidth"
              @input="appInstance.generateStringGraph()" class="slider w-full">
     </div>
-
-    <hr class="my-3 border-gray-200"/>
-
-    <label class="text-1xl font-extrabold bg-clip-text drop-shadow-lg mb-4">Colour settings: </label>
+      <button @click="colors.push({keys:''})">Add Colour</button>
+    </div>
     <div v-for="(item, index) in colors" :key="index" class="flex mb-1">
       <input :id="'colorkey'+index" type="text" v-model="item.keys" class="rounded border border-gray-300 mr-1"
              @input="appInstance.generateStringGraph()">

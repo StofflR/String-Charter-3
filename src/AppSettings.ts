@@ -1,7 +1,7 @@
-import { computed, ref } from "vue";
-import { getStations, loadGTFSData } from "./load_gtfs_data.ts";
-import { RouteD, Trip } from "./interfaces.ts";
-import { D3Generator } from "./chartgen/D3Generator.ts";
+import {computed, ref} from "vue";
+import {getStations, loadGTFSData} from "./load_gtfs_data.ts";
+import {RouteD, Trip, Colour} from "./interfaces.ts";
+import {D3Generator} from "./chartgen/D3Generator.ts";
 import {SVGGenerator} from "./chartgen/SVGGenerator.ts";
 
 let instance: App | null = null;
@@ -22,7 +22,7 @@ export class App {
     public diagonalTilt = ref(-45);
     public radius = ref(5);
     public strokewidth = ref(3);
-    public colors = ref([
+    public colors = ref<Colour[]>([
         {keys: "RJ, RJX", color: "#7b0e07"},
         {keys: "IC, ICE, EC, NJ", color: "#e8002a"},
         {keys: "R, REX, CJX", color: "#0060aa"},
@@ -58,11 +58,11 @@ export class App {
         fetch(data)
             .then(res => res.blob()) // Gets the response and returns it as a blob
             .then(blob => {
-                this.dataFiles.value.push({
-                    "name": fileName,
-                    "data": new File([blob], fileName, { type: "application/zip" })
-                });
-            }
+                    this.dataFiles.value.push({
+                        "name": fileName,
+                        "data": new File([blob], fileName, {type: "application/zip"})
+                    });
+                }
             );
     }
 
