@@ -64,12 +64,16 @@ export class App {
             );
     }
 
-    toggleSelection(route: string) {
-        let index = this.routesSelected.value.indexOf(route);
-        if (index === -1)
-            this.routesSelected.value.push(route);
-        else
-            this.routesSelected.value.splice(index, 1);
+    toggleSelection(route: string, event?: MouseEvent) {
+        if (event != undefined && !event.shiftKey) {
+            this.routesSelected.value = [route];
+        } else {
+            let index = this.routesSelected.value.indexOf(route);
+            if (index === -1)
+                this.routesSelected.value.push(route);
+            else
+                this.routesSelected.value.splice(index, 1);
+        }
         this.routeUpdate();
     }
 
