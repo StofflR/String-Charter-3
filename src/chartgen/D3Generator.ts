@@ -1,4 +1,4 @@
-import * as d3 from "d3";
+import * as d3 from "d3-selection";
 import { Trip } from "../interfaces.ts";
 import { StringChartGenerator } from "./StringChartGenerator.ts";
 
