@@ -25,14 +25,14 @@ export async function loadGTFSData(file: File): Promise<RouteD[]> {
 const stopsById: Record<string, string> = {};
 
 function parseRouteData(csvText: string, stopTimesCsvText: string, stopsCsvText: string, routes_: RouteD[]): RouteD[] {
-    const results = parse(csvText, {header: true});
-    const stopTimesResults = parse(stopTimesCsvText, {header: true});
-    const stopsResults = parse(stopsCsvText, {header: true});
+    const results = parse(csvText, {header: true, skipEmptyLines: true});
+    const stopTimesResults = parse(stopTimesCsvText, {header: true, skipEmptyLines: true});
+    const stopsResults = parse(stopsCsvText, {header: true, skipEmptyLines: true});
     const existingTripIds: Set<string> = new Set<string>();
 
     stopsResults.data.forEach((row: any) => {
         // Crop the station_id to the first three parts and add its first occurence to the list.
-        // If the station is already added, skip it.
+        // If the station is already added, skip it.      
         let stop_id_parts = row.stop_id.split(":");
         const cropped_stop_id = stop_id_parts.slice(0, 3).join(":");
 
@@ -58,6 +58,7 @@ function parseRouteData(csvText: string, stopTimesCsvText: string, stopsCsvText:
       tripsByRouteId[routeId] = [];
     }
     if (row.trip_id && !existingTripIds.has(row.trip_id)) {
+      const traintype = row.trip_short_name != undefined ? row.trip_short_name.split(" ")[0] : "";
       existingTripIds.add(row.trip_id);
       tripsByRouteId[routeId].push({
         id: row.trip_id,
@@ -65,7 +66,7 @@ function parseRouteData(csvText: string, stopTimesCsvText: string, stopsCsvText:
         stops: [],
         routeId: row.routeId,
         stations: [],
-        traintype: row.trip_short_name.split(" ")[0],
+        traintype: traintype,
       });
     }
 

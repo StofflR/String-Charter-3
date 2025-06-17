@@ -80,7 +80,6 @@ export class StringChartGenerator {
         for (const trip of this.data.relative_trips) {
             let color: string = "black";
 
-            console.log(this.colors);
             for (let index = 0; index < this.colors.length; index++) {
                 const item = this.colors[index];
                 const traintypes = item.keys.toLowerCase().split(/\s*,\s*/);
