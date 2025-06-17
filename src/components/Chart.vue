@@ -1,7 +1,24 @@
 <script lang="ts" setup>
 import { appInstance } from '../AppSettings';
+import { ref } from 'vue';
 
 let scaling = false;
+let selectedCursor = ref('grab');
+
+// change  cursor on shift key press
+document.addEventListener('keydown', (event) => {
+  if (event.shiftKey) {
+    selectedCursor.value = appInstance.flipAxis.value ? 'ew-resize' : 'ns-resize';
+  } else {
+    selectedCursor.value = 'grab';
+  }
+});
+
+document.addEventListener('keyup', () => {
+  selectedCursor.value = 'grab';
+});
+
+
 
 function scale(event: MouseEvent) {
   let dx = event.movementX;
@@ -14,9 +31,9 @@ function scale(event: MouseEvent) {
   }
 
   if (event.shiftKey) {
-    appInstance.scale.value += appInstance.flipAxis.value ? dx : dy;
+    appInstance.scale.value -= 0.5 * (appInstance.flipAxis.value ? dx : dy);
   } else {
-    appInstance.offset.value += appInstance.flipAxis.value ? dx : dy;
+    appInstance.offset.value -= 0.5 * (appInstance.flipAxis.value ? dx : dy);
   }
   appInstance.scale.value = Math.max(0, Math.min(appInstance.scale.value, 100));
   appInstance.offset.value = Math.max(0, Math.min(appInstance.offset.value, 100));
@@ -44,6 +61,6 @@ document.addEventListener("wheel", (event) => {
 
 <template>
   <div id="string-graph-card" class="flex w-full h-full">
-    <div id="graphCanvas" class="flex w-full h-full"></div>
+    <div id="graphCanvas" class="flex w-full h-full" v-bind:style="{cursor: selectedCursor}"></div>
   </div>
 </template>
