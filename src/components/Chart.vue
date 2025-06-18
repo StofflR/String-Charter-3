@@ -63,7 +63,7 @@ document.addEventListener("wheel", (event) => {
 
 
 <template>
-  <div id="string-graph-card" class="w-full">
-    <div id="graphCanvas" class="w-full h-max " v-bind:style="{cursor: selectedCursor}"></div>
+  <div id="string-graph-card" class="min-h-screen flex flex-col">
+    <div id="graphCanvas" class="flex flex-grow " v-bind:style="{cursor: selectedCursor}"></div>
   </div>
 </template>

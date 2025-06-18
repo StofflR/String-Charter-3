@@ -80,7 +80,7 @@ export class SVGGenerator extends StringChartGenerator {
 
     public async exportAsSVG() {
         this.svg = document.createElementNS(svgNS, 'svg');
-        this.svg.setAttribute('viewBox', "0 0 " + this.format(this.width) + " " + this.format(this.height));
+        this.svg.setAttribute('viewBox', "0 0 " + this.format(this.getOffsetX() + this.getWidth()) + " " + this.format(this.getOffsetY() + this.getHeight()));
         this.generate();
         // pretty print the SVG
 
