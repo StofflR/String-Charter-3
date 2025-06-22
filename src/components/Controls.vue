@@ -27,7 +27,7 @@ let currentComponent = appInstance.currentComponent;
     </div>
   </div>
   <div class="flex h-full w-full">
-    <div class="flex flex-col w-2/10 h-screen  border-r border-gray-300" v-if="expandView">
+    <div class="flex flex-col w-min h-screen  border-r border-gray-300" v-if="expandView">
       <DragDropArea v-if="currentComponent != 'RouteSelect' && currentComponent != 'VisualSettings' && expandView"/>
       <RouteSelect v-if="currentComponent == 'RouteSelect' && expandView"/>
       <VisualSettings v-if="currentComponent == 'VisualSettings' && expandView"/>
