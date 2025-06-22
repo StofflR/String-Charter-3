@@ -76,6 +76,20 @@ button:focus-visible {
         background-color: #eee;
     }
 }
+@media (prefers-color-scheme: dark) {
+    :root {
+        color: #213547;
+        background-color: #ffffff;
+    }
+
+    a:hover {
+        color: #747bff;
+    }
+
+    button {
+        background-color: #eee;
+    }
+}
 
 svg text{
     -webkit-user-select: none;

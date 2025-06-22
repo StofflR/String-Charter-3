@@ -39,7 +39,7 @@ let tiltable = appInstance.flipAxis;
 
     <div class="flex items-center gap-2" v-if="tiltable == true">
       <label for="x-tilt-slider" class="text-sm">Tilt x label:</label>
-      <input type="range" id="x-tilt-slider" min="-90" max="90" v-model="diagonalTilt"
+      <input type="range" id="x-tilt-slider" min="-90" max="0" v-model="diagonalTilt"
              @input="appInstance.generateStringGraph()" class="slider w-full">
     </div>
 
