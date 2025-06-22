@@ -3,6 +3,13 @@ import {getStations, loadGTFSData} from "./load_gtfs_data.ts";
 import {RouteD, Trip, Colour} from "./interfaces.ts";
 import {D3Generator} from "./chartgen/D3Generator.ts";
 import {SVGGenerator} from "./chartgen/SVGGenerator.ts";
+import uploadIcon from "./assets/icons/upload_file_24dp.svg";
+import trainIcon from "./assets/icons/train_24dp.svg";
+import menuIcon from "./assets/icons/menu_24dp.svg";
+import settingIcon from "./assets/icons/display_settings_24dp.svg";
+
+import obbData from './assets/datasets/GTFS_OP_2025_obb.zip';
+import goNortheastData from './assets/datasets/gonortheast_1747916855.zip'
 
 let instance: App | null = null;
 
@@ -42,12 +49,44 @@ export class App {
         return routes.filter((route: string) => route.toLowerCase().includes(this.routeFilter.value.toLowerCase()))
     });
     public dataFiles = ref<any[]>([]);
-
+    public expandView = ref(false);
+    public currentComponent = ref("");
+    public sideMenuComponents = [
+        {
+            "name": "Menu",
+            "component": null,
+            "icon": menuIcon
+        }, {
+            "name": 'Upload File',
+            "component": "DragDropArea",
+            "icon": uploadIcon
+        }, {
+            "name": 'Select Route',
+            "component": "RouteSelect",
+            "icon": trainIcon
+        }, {
+            "name": "Visual Settings",
+            "component": "VisualSettings",
+            "icon": settingIcon
+        }
+    ]
     constructor() {
         if (instance) {
             throw new Error("New instance cannot be created!!");
         }
         instance = this;
+
+        this.fetchDataFile("ÖBB 2025", obbData);
+        this.fetchDataFile("GO NORTHEAST 2025", goNortheastData);
+    }
+
+    swapViewComponent(component: string | null) {
+        if (!component) {
+            this.expandView.value = !this.expandView.value;
+            return;
+        }
+        this.expandView.value = true;
+        this.currentComponent.value = component;
     }
 
     fetchDataFile(fileName: string, data: any) {

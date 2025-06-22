@@ -3,43 +3,13 @@ import VisualSettings from "@/components/VisualSettings.vue";
 import BaseControls from "@/components/BaseControls.vue";
 import DragDropArea from "@/components/DragDropArea.vue";
 import RouteSelect from "./RouteSelect.vue";
-import uploadIcon from "../assets/icons/upload_file_24dp.svg";
-import trainIcon from "../assets/icons/train_24dp.svg";
-import menuIcon from "../assets/icons/menu_24dp.svg";
-import settingIcon from "../assets/icons/display_settings_24dp.svg";
-
-import {ref} from "vue";
 import Chart from "@/components/Chart.vue";
+import {appInstance} from "@/AppSettings.ts";
 
-let expandView = ref(false);
-let currentComponent = ref("");
-let sideMenuComponents = [
-  {
-    "name": "Menu",
-    "component": null,
-    "icon": menuIcon
-  }, {
-    "name": 'Upload File',
-    "component": "DragDropArea",
-    "icon": uploadIcon
-  }, {
-    "name": 'Select Route',
-    "component": "RouteSelect",
-    "icon": trainIcon
-  }, {
-    "name": "Visual Settings",
-    "component": "VisualSettings",
-    "icon": settingIcon
-  }
-]
+let sideMenuComponents = appInstance.sideMenuComponents;
+let expandView = appInstance.expandView;
+let currentComponent = appInstance.currentComponent;
 
-function swapComponent(component: string | null) {
-  if (!component) {
-    expandView.value = !expandView.value;
-    return;
-  }
-  currentComponent.value = component;
-}
 </script>
 
 
@@ -48,7 +18,7 @@ function swapComponent(component: string | null) {
     <div class="p-2 flex gap-2 w-max-2/10" v-for="item in sideMenuComponents">
       <button v-if="expandView || item.component == null" class="items-center w-12 h-12 shadow border"
               :class="[item.component == currentComponent && expandView ? 'border-indigo-500' : 'border-transparent']"
-              @click="swapComponent(item.component)">
+              @click="appInstance.swapViewComponent(item.component)">
         <img :src="item.icon" alt="" class="w-full h-full scale-300">
       </button>
     </div>
