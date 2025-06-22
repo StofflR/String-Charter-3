@@ -83,22 +83,27 @@ export class SVGGenerator extends StringChartGenerator {
         this.svg.setAttribute('viewBox', "0 0 " + this.format(this.getOffsetX() + this.getWidth()) + " " + this.format(this.getOffsetY() + this.getHeight()));
         this.generate();
         // pretty print the SVG
+        const mimeType: string = 'image/svg+xml';
+        const svgData = xmlFormat(new XMLSerializer().serializeToString(this.svg));
+        const blob = new Blob([svgData], {type: mimeType});
 
-        let input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/svg+xml';
-        input.style.display = 'none';
-        input.placeholder = "Download SVG";
-        input.name = "chart.svg";
-        input.addEventListener('change', _ => {
-            if (input?.files?.length) {
-                let file = input.files[0];
-                const svgData = xmlFormat(new XMLSerializer().serializeToString(this.svg));
-                const blob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
-                saveAs(blob, file.webkitRelativePath || file.name || 'chart.svg');
-                input.remove()
-            }
+        // check if showSaveFilePicker is supported
+        if (!('showSaveFilePicker' in window)) {
+            saveAs(blob, 'chart.svg');
+            return;
+        }
+
+        // currently not widely supported, but can be used in modern browsers
+        const handle = await window.showSaveFilePicker({
+            suggestedName: 'chart.svg',
+            types: [{
+                description: 'SVG file',
+                accept: {"image/*": ['.svg']},
+            }],
         });
-        input.click();
+
+        const writableStream = await handle.createWritable();
+        await writableStream.write(blob);
+        await writableStream.close();
     }
 }

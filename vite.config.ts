@@ -2,6 +2,7 @@ import {defineConfig} from "vite";
 import tailwindcss from '@tailwindcss/vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
+import basicSsl from '@vitejs/plugin-basic-ssl'
 
 // @ts-expect-error process is a nodejs global
 const host = process.env.TAURI_DEV_HOST;
@@ -12,7 +13,9 @@ export default defineConfig(async () => ({
     base: './', // <== tells Vite where your assets live
     plugins: [
         tailwindcss(),
-        vue()],
+        vue(),
+        basicSsl()
+    ],
     // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
     //
     // 1. prevent vite from obscuring rust errors
