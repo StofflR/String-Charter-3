@@ -19,9 +19,9 @@ let tiltable = appInstance.flipAxis;
 
     <label class="text-1xl font-extrabold bg-clip-text drop-shadow-lg mb-4">General settings:</label>
 
-    <div class="flex gap-6">
-      <label for="sanitice-switch" class="ml-6 flex items-center cursor-pointer">
-        <span class="mr-3 text-gray-700 font-medium">Sanitise input</span>
+    <div class="flex items-center gap-2">
+      <label for="sanitice-switch" class="flex items-center cursor-pointer">
+        <span class="mr-3 text-gray-700 text-sm">Sanitise input</span>
         <div class="relative">
           <input id="sanitice-switch" type="checkbox" class="sr-only peer" @change="appInstance.generateStringGraph()"
                  v-model="sanitized">
@@ -30,33 +30,33 @@ let tiltable = appInstance.flipAxis;
           </div>
         </div>
       </label>
-      <div class="flex items-center gap-2">
-        <label for="distance-scale-slider" class="text-sm">Scale geographic distance:</label>
-        <input type="range" id="distance-scale-slide" min="30" max="200" v-model="geographicScale"
-               @input="appInstance.generateStringGraph()" class="slider w-full">
-      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <label for="distance-scale-slider" class="text-sm">Scale geographic distance:</label>
+      <input type="range" id="distance-scale-slide" min="30" max="200" v-model="geographicScale"
+             @input="appInstance.generateStringGraph()" class="slider w-full">
+    </div>
 
-      <div class="flex items-center gap-2" v-if="tiltable == true">
-        <label for="x-tilt-slider" class="text-sm">Tilt x label:</label>
-        <input type="range" id="x-tilt-slider" min="-90" max="90" v-model="diagonalTilt"
-               @input="appInstance.generateStringGraph()" class="slider w-full">
-      </div>
+    <div class="flex items-center gap-2" v-if="tiltable == true">
+      <label for="x-tilt-slider" class="text-sm">Tilt x label:</label>
+      <input type="range" id="x-tilt-slider" min="-90" max="90" v-model="diagonalTilt"
+             @input="appInstance.generateStringGraph()" class="slider w-full">
     </div>
 
     <hr class="my-3 border-gray-200"/>
     <label class="text-1xl font-extrabold bg-clip-text drop-shadow-lg mb-4">Colour settings: </label>
-    <div class="flex gap-6">
 
     <div class="flex items-center gap-2">
       <label for="radius-slider" class="text-sm">Circle Radius:</label>
       <input type="range" id="radius-slider" min="1" max="10" v-model="radius"
              @input="appInstance.generateStringGraph()" class="slider w-full">
     </div>
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 mb-4">
       <label for="strokewidth-slider" class="text-sm">Stroke Width:</label>
       <input type="range" id="strokewith-slider" min="1" max="10" v-model="strokewidth"
              @input="appInstance.generateStringGraph()" class="slider w-full">
     </div>
+    <div class="flex justify-center gap-2 mb-4">
       <button @click="colors.push({keys:''})">Add Colour</button>
     </div>
     <div v-for="(item, index) in colors" :key="index" class="flex mb-1">
