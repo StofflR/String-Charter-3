@@ -9,5 +9,4 @@ import TopMenu from './components/TopMenu.vue';
     <TopMenu/>
     <Controls/>
   </span>
-  <Chart/>
 </template>

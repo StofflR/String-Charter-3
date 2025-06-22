@@ -79,6 +79,11 @@ export class App {
         this.routeUpdate();
     }
 
+    selectSingleRoute(route: string) {
+        this.routesSelected.value = [route];
+        this.routeUpdate();
+    }
+
     async routeUpdate() {
         this.trips.value = [];
 
