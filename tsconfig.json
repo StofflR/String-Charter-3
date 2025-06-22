@@ -22,8 +22,6 @@
   "include": [
     "src",
     "src/**/*",
-    "src/assets/datasets/*.zip",
-    "src/assets/icons/*.svg",
-    "src/assets/icons/*.ico",
+    "custom.d.ts",
   ]
 }
