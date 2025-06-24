@@ -45,17 +45,21 @@ let tiltable = appInstance.flipAxis;
     </div>
 
     <hr class="my-3 border-gray-200"/>
-    <label class="text-1xl font-extrabold bg-clip-text drop-shadow-lg mb-4">Colour settings: </label>
+    <label class="text-1xl font-extrabold bg-clip-text drop-shadow-lg mb-4">Style settings: </label>
 
     <div class="flex items-center gap-2">
       <label for="radius-slider" class="text-sm">Circle Radius:</label>
-      <input type="range" id="radius-slider" min="1" max="10" v-model="radius"
-             @input="appInstance.generateStringGraph()" class="slider w-full">
+      <input type="range" id="radius-slider" min="1" max="10" class="slider w-full"
+        v-model="radius" @input="appInstance.generateStringGraph()">
+      <input type="number" id="radius-input"  min="0" class="w-[4rem] rounded border border-gray-300"
+        v-model="radius" @change="appInstance.generateStringGraph()">
     </div>
     <div class="flex items-center gap-2 mb-4">
       <label for="strokewidth-slider" class="text-sm">Stroke Width:</label>
-      <input type="range" id="strokewith-slider" min="1" max="10" v-model="strokewidth"
-             @input="appInstance.generateStringGraph()" class="slider w-full">
+      <input type="range" id="strokewith-slider" min="1" max="10" class="slider w-full"
+        v-model="strokewidth" @input="appInstance.generateStringGraph()">
+      <input type="number" id="strokewith-input"  min="0" class="w-[4rem] rounded border border-gray-300"
+        v-model="strokewidth" @change="appInstance.generateStringGraph()">
     </div>
     <div class="flex justify-center gap-2 mb-4">
       <button @click="tripstyle.push({keys:''})">Add Colour</button>
