@@ -1,4 +1,4 @@
-import {Trip} from "../interfaces.ts";
+import {Tripstyle, StrokeDashPattern, Trip} from "../interfaces.ts";
 import {StringChartGenerator} from "./StringChartGenerator.ts";
 import xmlFormat from 'xml-formatter';
 import saveAs from 'file-saver';
@@ -11,10 +11,7 @@ export class SVGGenerator extends StringChartGenerator {
     readonly height: number;
     public stroke = 'black';
 
-    constructor(data: Trip[], axisFlip: boolean, colors: {
-        keys: string;
-        color: string;
-    }[] = [], radius: number, strokewidth: number, compare: boolean, diagonalTilt: number = -45, geographicScale: number = 100, sanitize: boolean = true) {
+    constructor(data: Trip[], axisFlip: boolean, colors: Tripstyle[] = [], radius: number, strokewidth: number, compare: boolean, diagonalTilt: number = -45, geographicScale: number = 100, sanitize: boolean = true) {
         super(data, axisFlip, colors, radius, strokewidth, compare, diagonalTilt, geographicScale, sanitize);
         this.svg = document.createElementNS(svgNS, 'svg');
         this.width = this.getDynamicWidth() + this.getOffsetX() + this.getOffsetY();
@@ -41,8 +38,9 @@ export class SVGGenerator extends StringChartGenerator {
         this.svg.appendChild(circle);
     }
 
-    protected override drawLine(startX: number, startY: number, endX: number, endY: number, color: string = "black", _strokewidth: number = 3) {
+    protected override drawLine(startX: number, startY: number, endX: number, endY: number, color: string = "black", _strokewidth: number = 3, _strockdash = StrokeDashPattern.Solid) {
         let line = document.createElementNS(svgNS, 'path');
+        line.setAttribute('stroke-dasharray', this.getStrokeDashPattern(_strockdash, _strokewidth));
         line.setAttribute('stroke-width', String(_strokewidth));
         line.setAttribute('stroke', color);
         line.setAttribute('d', `M ${this.format(startX)} ${this.format(startY)} L ${this.format(endX)} ${this.format(endY)}`);

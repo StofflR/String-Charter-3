@@ -1,12 +1,13 @@
 <script setup lang="ts">
 
 import {appInstance} from "@/AppSettings.ts";
+import { StrokeDashPattern } from "../interfaces";
 
 
 let sanitized = appInstance.sanitized;
 let geographicScale = appInstance.geographicScale
 let diagonalTilt = appInstance.diagonalTilt;
-let colors = appInstance.colors;
+let tripstyle = appInstance.tripstyle;
 let radius = appInstance.radius;
 let strokewidth = appInstance.strokewidth;
 let tiltable = appInstance.flipAxis;
@@ -57,12 +58,15 @@ let tiltable = appInstance.flipAxis;
              @input="appInstance.generateStringGraph()" class="slider w-full">
     </div>
     <div class="flex justify-center gap-2 mb-4">
-      <button @click="colors.push({keys:''})">Add Colour</button>
+      <button @click="tripstyle.push({keys:''})">Add Colour</button>
     </div>
-    <div v-for="(item, index) in colors" :key="index" class="flex mb-1">
+    <div v-for="(item, index) in tripstyle" :key="index" class="flex mb-1">
       <input :id="'colorkey'+index" type="text" v-model="item.keys" class="rounded border border-gray-300 mr-1"
              @input="appInstance.generateStringGraph()">
       <input :id="'colorval'+index" type="color" v-model="item.color" @change="appInstance.generateStringGraph()">
+      <select v-model="item.strokedash" @change="appInstance.generateStringGraph()" class="rounded border border-gray-300 ml-1">
+        <option v-for="option in StrokeDashPattern" :value="option">{{option}}</option>
+      </select>
     </div>
   </div>
 </template>

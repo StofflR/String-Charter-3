@@ -1,5 +1,5 @@
 import * as d3 from "d3-selection";
-import {StopCircle, Trip} from "../interfaces.ts";
+import {Tripstyle, StopCircle, StrokeDashPattern, Trip} from "../interfaces.ts";
 import { StringChartGenerator } from "./StringChartGenerator.ts";
 
 export class D3Generator extends StringChartGenerator {
@@ -19,7 +19,7 @@ export class D3Generator extends StringChartGenerator {
         return this.width * scale - (this.getOffsetX() + this.getOffsetY());
     }
 
-    constructor(data: Trip[], axisFlip: boolean, colors: { keys: string; color: string; }[] = [], radius: number, strokewidth: number, compare: boolean, diagonalTilt: number = -45, geographicScale: number = 100, sanitize: boolean = true) {
+    constructor(data: Trip[], axisFlip: boolean, colors: Tripstyle[] = [], radius: number, strokewidth: number, compare: boolean, diagonalTilt: number = -45, geographicScale: number = 100, sanitize: boolean = true) {
         super(data, axisFlip, colors, radius, strokewidth, compare, diagonalTilt, geographicScale, sanitize);
         this.width = this.getDynamicWidth() + this.getOffsetX() + this.getOffsetY();
         this.height = this.getDynamicHeight() + this.getOffsetX() + this.getOffsetY();
@@ -38,12 +38,14 @@ export class D3Generator extends StringChartGenerator {
         this.container.append(this.svg.node()!);
     }
 
-    protected override drawLine(_startX: number, _startY: number, _endX: number, _endY: number, _color: string = "black", _strokewidth: number = 3) {
+    protected override drawLine(_startX: number, _startY: number, _endX: number, _endY: number, _color: string = "black", _strokewidth: number = 3, _strockdash = StrokeDashPattern.Solid) {
         if (!this.svg) {
             console.error('SVG element not initialized.');
             return;
         }
+        console.log(this.getStrokeDashPattern(_strockdash, _strokewidth));
         this.svg.append('path')
+            .attr('stroke-dasharray', this.getStrokeDashPattern(_strockdash, _strokewidth))
             .attr('stroke-width', _strokewidth)
             .attr('stroke', _color)
             .attr('d', `M ${this.format(_startX)} ${this.format(_startY)} L ${this.format(_endX)} ${this.format(_endY)}`);

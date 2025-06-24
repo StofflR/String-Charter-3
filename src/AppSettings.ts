@@ -1,6 +1,6 @@
 import {computed, ref} from "vue";
 import {getStations, loadGTFSData} from "./load_gtfs_data.ts";
-import {RouteD, Trip, Colour} from "./interfaces.ts";
+import {RouteD, Trip, Tripstyle, StrokeDashPattern} from "./interfaces.ts";
 import {D3Generator} from "./chartgen/D3Generator.ts";
 import {SVGGenerator} from "./chartgen/SVGGenerator.ts";
 import uploadIcon from "./assets/icons/upload_file_24dp.svg";
@@ -29,11 +29,11 @@ export class App {
     public diagonalTilt = ref(-45);
     public radius = ref(5);
     public strokewidth = ref(3);
-    public colors = ref<Colour[]>([
-        {keys: "RJ, RJX", color: "#7b0e07"},
-        {keys: "IC, ICE, EC, NJ", color: "#e8002a"},
-        {keys: "R, REX, CJX", color: "#0060aa"},
-        {keys: "S", color: "#0097d9"}
+    public tripstyle = ref<Tripstyle[]>([
+        {keys: "RJ, RJX", color: "#7b0e07", strokedash: StrokeDashPattern.Solid},
+        {keys: "IC, ICE, EC, NJ", color: "#e8002a", strokedash: StrokeDashPattern.Solid},
+        {keys: "R, REX, CJX", color: "#0060aa", strokedash: StrokeDashPattern.Solid},
+        {keys: "S", color: "#0097d9", strokedash: StrokeDashPattern.Solid}
     ])
 
     public trips = ref<Trip[]>([]);
@@ -215,8 +215,8 @@ export class App {
     }
 
     generateStringGraph(): void {
-        this.d3Gen = new D3Generator(this.trips.value, !this.flipAxis.value, this.colors.value, this.radius.value, this.strokewidth.value, this.compare.value, this.diagonalTilt.value, this.geographicScale.value, this.sanitized.value);
-        this.svgGen = new SVGGenerator(this.trips.value, !this.flipAxis.value, this.colors.value, this.radius.value, this.strokewidth.value, this.compare.value, this.diagonalTilt.value, this.geographicScale.value, this.sanitized.value);
+        this.d3Gen = new D3Generator(this.trips.value, !this.flipAxis.value, this.tripstyle.value, this.radius.value, this.strokewidth.value, this.compare.value, this.diagonalTilt.value, this.geographicScale.value, this.sanitized.value);
+        this.svgGen = new SVGGenerator(this.trips.value, !this.flipAxis.value, this.tripstyle.value, this.radius.value, this.strokewidth.value, this.compare.value, this.diagonalTilt.value, this.geographicScale.value, this.sanitized.value);
         this.updateViewBox(this.scale.value, this.offset.value);
         this.d3Gen.generate();
         this.svgGen.generate();

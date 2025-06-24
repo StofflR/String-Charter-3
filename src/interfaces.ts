@@ -49,7 +49,17 @@ export interface StopCircle {
     color: string
 }
 
-export interface Colour {
+export interface Tripstyle {
     keys: string;
     color: string;
+    strokedash: StrokeDashPattern;
+}
+
+export enum StrokeDashPattern {
+    Solid        = "------------------",
+    FourDouble   = "----  ----  ----  ",
+    DoubleSingle = "-- -- -- -- -- -- ",
+    DoubleDouble = "--  --  --  --  --",
+    SingleSingle = "- - - - - - - - - ",
+    HalfHalf     = ". . . . . . . . . "
 }

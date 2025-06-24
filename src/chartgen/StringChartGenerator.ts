@@ -1,4 +1,4 @@
-import {RelativeStop, Trip, Colour} from "../interfaces";
+import {RelativeStop, Trip, Tripstyle, StrokeDashPattern} from "../interfaces";
 import {splitLongStationName} from "../Utility";
 import {RelativeTrips} from "./RelativeTrips";
 import {ComparisonTrips} from "./ComparisonTrips";
@@ -13,11 +13,11 @@ export class StringChartGenerator {
     private readonly cleanNames: boolean = false;
     protected radius: number = 5;
     protected strokewidth: number = 3;
-    protected colors: Colour[] = [];
+    protected colors: Tripstyle[] = [];
     protected geographicScale: number;
 
 
-    constructor(data: Trip[], axisFlip: boolean, colors: { keys: string; color: string; }[] = [],
+    constructor(data: Trip[], axisFlip: boolean, colors: Tripstyle[] = [],
                 radius: number, strokewidth: number, compare: boolean, diagonalTilt: number = -45, geographicScale: number = 100, sanitize: boolean = true) {
         this.geographicScale = geographicScale;
         this.data = compare ? new ComparisonTrips(data) : new RelativeTrips(data);
@@ -92,13 +92,16 @@ export class StringChartGenerator {
         this.drawLine(this.getOffsetX() - 20, this.getOffsetY() - 40, this.getOffsetX() - 20, this.getHeight() + 20 + this.getOffsetY());
         for (const trip of this.data.relative_trips) {
             let color: string = "black";
+            let strokedash: StrokeDashPattern = StrokeDashPattern.Solid;
 
             for (let index = 0; index < this.colors.length; index++) {
                 const item = this.colors[index];
                 const traintypes = item.keys.toLowerCase().split(/\s*,\s*/);
 
-                if (traintypes.includes(trip.traintype.toLowerCase()))
+                if (traintypes.includes(trip.traintype.toLowerCase())) {
                     color = item.color;
+                    strokedash = item.strokedash;
+                }
             }
 
             let relativeStops = trip.stops;
@@ -113,7 +116,7 @@ export class StringChartGenerator {
                 let startY = this.getRelY(currentConnection) * this.getHeight() + this.getOffsetY();
                 let endY = this.getRelY(nextConnection) * this.getHeight() + this.getOffsetY();
 
-                this.drawLine(startX, startY, endX, endY, color, this.strokewidth)
+                this.drawLine(startX, startY, endX, endY, color, this.strokewidth, strokedash);
                 if (i == 0) {
                     this.drawStopCircle(startX, startY, trip.name, currentConnection.station, currentConnection.timeLabel, color);
                 }
@@ -132,7 +135,7 @@ export class StringChartGenerator {
         return stationName;
     }
 
-    protected drawLine(_startX: number, _startY: number, _endX: number, _endY: number, _color: string = "", _strokewidth: number = 3): void {
+    protected drawLine(_startX: number, _startY: number, _endX: number, _endY: number, _color: string = "", _strokewidth: number = 3, _strockdash = StrokeDashPattern.Solid): void {
         // This method should be overridden in subclasses to draw the line
         throw ('drawLine method not implemented');
     }
@@ -222,5 +225,23 @@ export class StringChartGenerator {
                 this.drawText(timeLabel, this.getOffsetX() - 30, yPosition + this.getOffsetY(), 'end');
             }
         }
+    }
+
+    protected getStrokeDashPattern(pattern: StrokeDashPattern, strokewidth: number): string {
+        switch (pattern) {
+            case StrokeDashPattern.Solid:
+                return "";
+            case StrokeDashPattern.FourDouble:
+                return strokewidth*4 + "," + strokewidth*4;
+            case StrokeDashPattern.DoubleSingle:
+                return strokewidth*2 + "," + strokewidth;
+            case StrokeDashPattern.DoubleDouble:
+                return strokewidth*2 + "," + strokewidth*2;
+            case StrokeDashPattern.SingleSingle:
+                return strokewidth + "," + strokewidth;
+            case StrokeDashPattern.HalfHalf:
+                return strokewidth/2 + "," + strokewidth/2;
+        }
+        return "asdf";
     }
 }
