@@ -14,7 +14,7 @@ export default defineConfig(async () => ({
     plugins: [
         tailwindcss(),
         vue(),
-        basicSsl()
+        // basicSsl() enable to test https features
     ],
     // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
     //
